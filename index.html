@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora 3D — Custos & Precificação</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00e5b0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calc3D">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0f;
+    --surface: #161919;
+    --surface2: #1d2121;
+    --border: #2a2f2f;
+    --border2: #363d3d;
+    --accent: #00e5b0;
+    --accent2: #00b88c;
+    --accent-dim: rgba(0,229,176,0.08);
+    --accent-dim2: rgba(0,229,176,0.15);
+    --text: #e8edec;
+    --text2: #8fa09d;
+    --text3: #5a6d6a;
+    --danger: #ff5f5f;
+    --warn: #ffb23f;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    background: rgba(13,15,15,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 2rem;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+  .logo-icon {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3px;
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 7px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text2);
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active {
+    background: var(--accent);
+    color: #000;
+  }
+
+  /* LAYOUT */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h2 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .page-header p { font-size: 14px; color: var(--text2); }
+
+  /* GRID LAYOUT */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+  @media(max-width: 700px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .nav-tab { padding: 6px 10px; font-size: 12px; }
+    main { padding: 1rem; }
+    header { padding: 0 1rem; }
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* FIELDS */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 0.2px;
+  }
+  .field-hint { font-size: 11px; color: var(--text3); }
+  .input-wrap { position: relative; }
+  .input-wrap input, .input-wrap select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 40px 10px 12px;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .input-wrap select {
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6d6a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  .input-wrap input:focus, .input-wrap select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,176,0.1);
+  }
+  .input-unit {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    pointer-events: none;
+  }
+
+  /* SLIDER */
+  .slider-field { display: flex; flex-direction: column; gap: 8px; }
+  .slider-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .slider-label-row label { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .slider-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    appearance: none;
+    background: var(--border2);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  input[type=range]:focus { outline: none; }
+
+  /* RESULTS PANEL */
+  .results-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 1.5rem;
+    position: sticky;
+    top: 80px;
+  }
+  .results-header {
+    background: var(--accent-dim);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 1.25rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-name { font-size: 13px; color: var(--text2); }
+  .metric-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .metric-val.accent { color: var(--accent); font-size: 15px; font-weight: 700; }
+  .metric-val.green { color: #4ade80; }
+  .metric-val.danger { color: var(--danger); }
+  .metric-total {
+    background: var(--accent-dim);
+    padding: 14px 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  .metric-total .label {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+  }
+  .metric-total .value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* METRIC CARDS GRID */
+  .metric-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  @media(max-width: 700px) { .metric-cards { grid-template-columns: 1fr 1fr; } }
+  .mcard {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+  }
+  .mcard-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .mcard-val {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .mcard-val.accent { color: var(--accent); }
+  .mcard-val.green { color: #4ade80; }
+  .mcard-val.danger { color: var(--danger); }
+
+  /* ALERT */
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .alert-warn { background: rgba(255,178,63,0.1); border: 1px solid rgba(255,178,63,0.3); color: var(--warn); }
+  .alert-info { background: var(--accent-dim2); border: 1px solid rgba(0,229,176,0.2); color: var(--accent2); }
+  .alert-danger { background: rgba(255,95,95,0.1); border: 1px solid rgba(255,95,95,0.3); color: var(--danger); }
+  .alert.hidden { display: none; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-accent { background: var(--accent-dim2); color: var(--accent); border: 1px solid rgba(0,229,176,0.3); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* BUTTON */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+  }
+  .btn-accent { background: var(--accent); color: #000; }
+  .btn-accent:hover { background: #00ffca; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* RATE TABLE */
+  .rate-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .rate-row:last-child { border-bottom: none; }
+  .rate-row .rname { color: var(--text2); }
+  .rate-row .rval { font-family: var(--mono); color: var(--accent); font-weight: 700; }
+
+  /* SEPARATOR LINE */
+  .section-sep { margin-bottom: 1.25rem; }
+
+  /* MAIN 3-COL LAYOUT */
+  .layout-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media(max-width: 800px) { .layout-sidebar { grid-template-columns: 1fr; } }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+  footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">◈</div>
+      <span>CALC3D</span>
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="switchPage('maquina')">⚙ Máquina</button>
+      <button class="nav-tab" onclick="switchPage('projeto')">◈ Projeto</button>
+      <button class="nav-tab" onclick="switchPage('preco')">R$ Precificação</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ======================== PÁGINA: MÁQUINA ======================== -->
+  <div class="page active" id="page-maquina">
+    <div class="page-header">
+      <h2>// Configuração da máquina</h2>
+      <p>Configure uma vez. Esses valores serão usados em todos os cálculos de projeto.</p>
+    </div>
+    <div class="layout-sidebar">
+      <div>
+        <div class="card">
+          <div class="card-title">Impressora</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Valor de compra</label>
+              <div class="input-wrap">
+                <input type="number" id="valor_maq" value="3000" min="0" step="100" oninput="calc()">
+                <span class="input-unit">R$</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Vida útil estimada</label>
+              <div class="input-wrap">
+                <input type="number" id="vida_util" value="5" min="1" max="20" oninput="calc()">
+                <span class="input-unit">anos</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Horas de uso por dia (média)</label>
+              <div class="input-wrap">
+                <input type="number" id="horas_dia" value="8" min="1" max="24" oninput="calc()">
+                <span class="input-unit">h/dia</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Consumo elétrico</label>
+              <div class="input-wrap">
+                <input type="number" id="consumo_w" value="120" min="0" oninput="calc()">
+                <span class="input-unit">W</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Energia & Filamento</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Tarifa de energia</label>
+              <div class="input-wrap">
+                <input type="number" id="tarifa_kwh" value="0.85" min="0" step="0.01" oninput="calc()">
+                <span class="input-unit">R$/kWh</span>
+              </div>
+              <span class="field-hint">Média Brasil ≈ R$ 0,85 (veja sua conta de luz)</span>
+            </div>
+            <div class="field">
+              <label>Preço do filamento</label>
+              <div class="input-wrap">
+                <input type="number" id="preco_fil_kg" value="120" min="0" step="5" oninput="calc()">
+                <span class="input-unit">R$/kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Mão de obra</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Valor da sua hora</label>
+              <div class="input-wrap">
+                <input type="number" id="valor_hora" value="25" min="0" step="1" oninput="calc()">
+                <span class="input-unit">R$/h</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Custo fixo mensal (aluguel, internet…)</label>
+              <div class="input-wrap">
+                <input type="number" id="custo_fixo" value="0" min="0" step="50" oninput="calc()">
+                <span class="input-unit">R$/mês</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Projetos/impressões por mês (média)</label>
+              <div class="input-wrap">
+                <input type="number" id="projetos_mes" value="20" min="1" oninput="calc()">
+                <span class="input-unit">und</span>
+              </div>
+              <span class="field-hint">Usado para repartir o custo fixo por projeto</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Manutenção</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Custo médio de manutenção</label>
+              <div class="input-wrap">
+                <input type="number" id="manut_ano" value="300" min="0" step="50" oninput="calc()">
+                <span class="input-unit">R$/ano</span>
+              </div>
+              <span class="field-hint">Bicos, correias, lubrificante, peças…</span>
+            </div>
+            <div class="field">
+              <label>Custo de insumos auxiliares</label>
+              <div class="input-wrap">
+                <input type="number" id="insumos_mes" value="30" min="0" step="10" oninput="calc()">
+                <span class="input-unit">R$/mês</span>
+              </div>
+              <span class="field-hint">Adesivo de cama, álcool, espátulas…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel lateral de taxas calculadas -->
+      <div>
+        <div class="results-panel">
+          <div class="results-header">Taxas calculadas</div>
+          <div class="metric-row">
+            <span class="metric-name">Depreciação / hora</span>
+            <span class="metric-val accent" id="cfg_dep_h">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Energia / hora</span>
+            <span class="metric-val accent" id="cfg_ener_h">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Filamento / grama</span>
+            <span class="metric-val accent" id="cfg_fil_g">R$ 0,000</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Manutenção / hora</span>
+            <span class="metric-val accent" id="cfg_manut_h">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Custo fixo / projeto</span>
+            <span class="metric-val accent" id="cfg_fixo_proj">R$ 0,00</span>
+          </div>
+          <div class="metric-total">
+            <span class="label">Custo operac. / hora</span>
+            <span class="value" id="cfg_total_h">R$ 0,00</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.6">
+          <strong style="color:var(--text);display:block;margin-bottom:4px">Como funciona</strong>
+          O custo operacional por hora inclui depreciação, energia e manutenção. A mão de obra é calculada separadamente por projeto, conforme o tempo de envolvimento.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PÁGINA: PROJETO ======================== -->
+  <div class="page" id="page-projeto">
+    <div class="page-header">
+      <h2>// Custos do projeto</h2>
+      <p>Preencha os parâmetros de cada impressão para calcular o custo real.</p>
+    </div>
+    <div class="layout-sidebar">
+      <div>
+        <div class="card">
+          <div class="card-title">Identificação (opcional)</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Nome do projeto</label>
+              <div class="input-wrap">
+                <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" style="font-family:var(--sans);padding-right:12px">
+              </div>
+            </div>
+            <div class="field">
+              <label>Material / filamento</label>
+              <div class="input-wrap">
+                <select id="material" onchange="updateMaterial()">
+                  <option value="120">PLA — R$ 120/kg (padrão)</option>
+                  <option value="150">PETG — R$ 150/kg</option>
+                  <option value="200">ABS — R$ 200/kg</option>
+                  <option value="350">Resina — R$ 350/kg</option>
+                  <option value="custom">Personalizado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="custom_fil_wrap" class="field" style="margin-top:12px;display:none">
+            <label>Preço do filamento personalizado</label>
+            <div class="input-wrap">
+              <input type="number" id="custom_fil" value="120" min="0" oninput="calc()">
+              <span class="input-unit">R$/kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Parâmetros de impressão</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Tempo de impressão — horas</label>
+              <div class="input-wrap">
+                <input type="number" id="tempo_h" value="4" min="0" step="1" oninput="calc()">
+                <span class="input-unit">h</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Tempo de impressão — minutos</label>
+              <div class="input-wrap">
+                <input type="number" id="tempo_m" value="30" min="0" max="59" oninput="calc()">
+                <span class="input-unit">min</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Peso do filamento usado</label>
+              <div class="input-wrap">
+                <input type="number" id="filamento_g" value="80" min="0" oninput="calc()">
+                <span class="input-unit">g</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Pós-processamento / acabamento</label>
+              <div class="input-wrap">
+                <input type="number" id="pos_proc" value="0.5" min="0" step="0.1" oninput="calc()">
+                <span class="input-unit">h</span>
+              </div>
+              <span class="field-hint">Lixamento, pintura, montagem…</span>
+            </div>
+            <div class="field">
+              <label>Monitoramento durante impressão</label>
+              <div class="input-wrap">
+                <select id="inclui_mdo" onchange="calc()">
+                  <option value="0">Não monitorado</option>
+                  <option value="0.1" selected>Parcial — 10% do tempo</option>
+                  <option value="0.2">Ativo — 20% do tempo</option>
+                  <option value="1">Contínuo — 100% do tempo</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Quantidade de peças</label>
+              <div class="input-wrap">
+                <input type="number" id="qtd_pecas" value="1" min="1" oninput="calc()">
+                <span class="input-unit">und</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Taxa de perda e retrabalho</div>
+          <div class="slider-field">
+            <div class="slider-label-row">
+              <label>Falha / desperdício / suporte descartado</label>
+              <span class="slider-value" id="sl_perda">10%</span>
+            </div>
+            <input type="range" id="taxa_perda" min="0" max="40" value="10" step="1" oninput="document.getElementById('sl_perda').textContent=this.value+'%';calc()">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:2px">
+              <span>0% — sem perda</span>
+              <span>40% — alto retrabalho</span>
+            </div>
+          </div>
+          <div class="alert alert-info" style="margin-top:12px">
+            ℹ Média típica para FDM: 8–15%. Se usa suporte intenso ou material difícil, considere 15–25%.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Outros custos do projeto</div>
+          <div class="three-col">
+            <div class="field">
+              <label>Embalagem</label>
+              <div class="input-wrap">
+                <input type="number" id="embalagem" value="2.50" min="0" step="0.10" oninput="calc()">
+                <span class="input-unit">R$</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Frete / envio</label>
+              <div class="input-wrap">
+                <input type="number" id="frete" value="0" min="0" step="0.50" oninput="calc()">
+                <span class="input-unit">R$</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Outros (tinta, resina…)</label>
+              <div class="input-wrap">
+                <input type="number" id="outros" value="0" min="0" step="0.50" oninput="calc()">
+                <span class="input-unit">R$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel de resultados -->
+      <div>
+        <div class="results-panel">
+          <div class="results-header">Custo total do projeto</div>
+          <div class="metric-row">
+            <span class="metric-name">Filamento</span>
+            <span class="metric-val" id="r_fil">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Energia elétrica</span>
+            <span class="metric-val" id="r_ener">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Depreciação</span>
+            <span class="metric-val" id="r_dep">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Manutenção</span>
+            <span class="metric-val" id="r_manut">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Mão de obra</span>
+            <span class="metric-val" id="r_mdo">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Custo fixo rateado</span>
+            <span class="metric-val" id="r_fixo">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Perda / retrabalho</span>
+            <span class="metric-val" id="r_perda">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Extras (embalagem, frete…)</span>
+            <span class="metric-val" id="r_extra">R$ 0,00</span>
+          </div>
+          <div class="metric-total">
+            <span class="label">Custo total</span>
+            <span class="value" id="r_total">R$ 0,00</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1px">Custo por peça</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="r_por_peca">R$ 0,00</div>
+        </div>
+        <button class="btn btn-accent" style="width:100%;margin-top:10px;justify-content:center" onclick="switchPage('preco')">
+          Calcular preço de venda →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== PÁGINA: PRECIFICAÇÃO ======================== -->
+  <div class="page" id="page-preco">
+    <div class="page-header">
+      <h2>// Precificação</h2>
+      <p>Defina margens e taxas para chegar ao preço de venda ideal.</p>
+    </div>
+    <div class="layout-sidebar">
+      <div>
+        <div class="card">
+          <div class="card-title">Modo de precificação</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Como deseja calcular?</label>
+              <div class="input-wrap">
+                <select id="modo_preco" onchange="toggleModo();calc()">
+                  <option value="margem">Definir margem → ver preço</option>
+                  <option value="preco">Definir preço → ver lucro</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" id="campo_margem">
+              <label>Margem de lucro desejada</label>
+              <div class="input-wrap">
+                <input type="number" id="margem" value="40" min="0" max="500" oninput="calc()">
+                <span class="input-unit">%</span>
+              </div>
+              <span class="field-hint">Markup sobre o custo de produção</span>
+            </div>
+            <div class="field" id="campo_preco_venda" style="display:none">
+              <label>Preço de venda (R$)</label>
+              <div class="input-wrap">
+                <input type="number" id="preco_venda_input" value="0" min="0" step="0.50" oninput="calc()">
+                <span class="input-unit">R$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Impostos & Plataformas</div>
+          <div class="two-col">
+            <div class="field">
+              <label>Impostos / MEI / simples</label>
+              <div class="input-wrap">
+                <input type="number" id="impostos" value="6" min="0" max="100" step="0.5" oninput="calc()">
+                <span class="input-unit">%</span>
+              </div>
+              <span class="field-hint">MEI isento até o limite; Simples ≈ 4–6%</span>
+            </div>
+            <div class="field">
+              <label>Taxa da plataforma de venda</label>
+              <div class="input-wrap">
+                <select id="taxa_plat" onchange="calc()">
+                  <option value="0">Venda direta — 0%</option>
+                  <option value="10">Mercado Livre Clássico — ~10%</option>
+                  <option value="13">Mercado Livre Premium — ~13%</option>
+                  <option value="6.5">Etsy — ~6,5%</option>
+                  <option value="5">Shopify — ~5%</option>
+                  <option value="custom_plat">Personalizado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="custom_plat_wrap" class="field" style="margin-top:12px;display:none">
+            <label>Taxa personalizada</label>
+            <div class="input-wrap">
+              <input type="number" id="custom_plat_val" value="0" min="0" max="50" step="0.5" oninput="calc()">
+              <span class="input-unit">%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Cenários de precificação</div>
+          <div id="scenarios-wrap">
+            <!-- gerado por JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel de resultado -->
+      <div>
+        <div class="results-panel">
+          <div class="results-header">Resultado de venda</div>
+          <div class="metric-row">
+            <span class="metric-name">Custo de produção</span>
+            <span class="metric-val" id="p_custo">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Impostos</span>
+            <span class="metric-val" id="p_imp">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Taxa plataforma</span>
+            <span class="metric-val" id="p_plat">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Lucro líquido</span>
+            <span class="metric-val" id="p_lucro">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Margem real</span>
+            <span class="metric-val" id="p_margem_real">0%</span>
+          </div>
+          <div class="metric-total">
+            <span class="label">Preço de venda</span>
+            <span class="value" id="p_venda">R$ 0,00</span>
+          </div>
+        </div>
+        <div id="aviso_lucro" class="alert alert-danger hidden" style="margin-top:10px">
+          ⚠ Preço abaixo do custo de produção! Você está vendendo no prejuízo.
+        </div>
+        <div id="aviso_margem_baixa" class="alert alert-warn hidden" style="margin-top:10px">
+          ⚠ Margem abaixo de 20%. Revise se os custos fixos estão cobertos.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  CALC3D — Calculadora de Impressão 3D &nbsp;|&nbsp; <span>feito com ♥</span> para makers brasileiros
+</footer>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function gs(id) { return document.getElementById(id).value; }
+function set(id, txt) { const el = document.getElementById(id); if(el) el.textContent = txt; }
+function cls(id, ...c) { const el = document.getElementById(id); if(el) { el.className = el.className.replace(/green|danger|accent/g,'').trim(); c.forEach(x=>el.classList.add(x)); } }
+function fmt(v) {
+  if(isNaN(v)) v = 0;
+  return 'R$ ' + Math.abs(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+function fmtPct(v) { return v.toFixed(1).replace('.',',') + '%'; }
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const tabs = { maquina: 0, projeto: 1, preco: 2 };
+  document.querySelectorAll('.nav-tab')[tabs[name]].classList.add('active');
+  calc();
+}
+
+// ── Material select ───────────────────────────────────────────────────────────
+function updateMaterial() {
+  const sel = gs('material');
+  const wrap = document.getElementById('custom_fil_wrap');
+  if(sel === 'custom') {
+    wrap.style.display = '';
+  } else {
+    wrap.style.display = 'none';
+    document.getElementById('preco_fil_kg').value = sel;
+    calc();
+  }
+}
+
+// ── Modo precificação ─────────────────────────────────────────────────────────
+function toggleModo() {
+  const m = gs('modo_preco');
+  document.getElementById('campo_margem').style.display = m === 'margem' ? '' : 'none';
+  document.getElementById('campo_preco_venda').style.display = m === 'preco' ? '' : 'none';
+}
+
+// ── Taxa plataforma personalizada ─────────────────────────────────────────────
+document.getElementById('taxa_plat').addEventListener('change', function() {
+  document.getElementById('custom_plat_wrap').style.display = this.value === 'custom_plat' ? '' : 'none';
+  calc();
+});
+
+// ── Cálculo principal ─────────────────────────────────────────────────────────
+function calc() {
+  // === Config máquina ===
+  const valor_maq    = gv('valor_maq');
+  const vida_util    = Math.max(gv('vida_util'), 0.1);
+  const horas_dia    = Math.max(gv('horas_dia'), 0.1);
+  const consumo_w    = gv('consumo_w');
+  const tarifa       = gv('tarifa_kwh');
+  const custo_fixo   = gv('custo_fixo');
+  const projetos_mes = Math.max(gv('projetos_mes'), 1);
+  const manut_ano    = gv('manut_ano');
+  const insumos_mes  = gv('insumos_mes');
+  const valor_hora   = gv('valor_hora');
+
+  let preco_fil_kg = gv('preco_fil_kg');
+  if(gs('material') === 'custom') preco_fil_kg = gv('custom_fil');
+
+  const horas_total = vida_util * 365 * horas_dia;
+  const dep_h = horas_total > 0 ? valor_maq / horas_total : 0;
+  const ener_h = (consumo_w / 1000) * tarifa;
+  const fil_g_val = preco_fil_kg / 1000;
+  const manut_h = horas_dia > 0 ? (manut_ano + insumos_mes * 12) / (365 * horas_dia) : 0;
+  const custo_total_h = dep_h + ener_h + manut_h;
+  const fixo_por_proj = custo_fixo / projetos_mes;
+
+  set('cfg_dep_h',   fmt(dep_h) + '/h');
+  set('cfg_ener_h',  fmt(ener_h) + '/h');
+  set('cfg_fil_g',   'R$ ' + fil_g_val.toFixed(4).replace('.',',') + '/g');
+  set('cfg_manut_h', fmt(manut_h) + '/h');
+  set('cfg_fixo_proj', fmt(fixo_por_proj));
+  set('cfg_total_h', fmt(custo_total_h) + '/h');
+
+  // === Projeto ===
+  const tempo_h   = gv('tempo_h') + gv('tempo_m') / 60;
+  const fil_g     = gv('filamento_g');
+  const pos_h     = gv('pos_proc');
+  const frac_mdo  = gv('inclui_mdo');
+  const perda_pct = gv('taxa_perda') / 100;
+  const qtd       = Math.max(gv('qtd_pecas'), 1);
+
+  const c_fil    = fil_g * fil_g_val;
+  const c_ener   = tempo_h * ener_h;
+  const c_dep    = tempo_h * dep_h;
+  const c_manut  = tempo_h * manut_h;
+  const c_mdo    = (tempo_h * frac_mdo + pos_h) * valor_hora;
+  const c_fixo   = fixo_por_proj;
+  const c_extra  = gv('embalagem') + gv('frete') + gv('outros');
+  const subtotal = c_fil + c_ener + c_dep + c_manut + c_mdo + c_fixo + c_extra;
+  const c_perda  = subtotal * perda_pct;
+  const total    = subtotal + c_perda;
+  const por_peca = total / qtd;
+
+  set('r_fil',     fmt(c_fil));
+  set('r_ener',    fmt(c_ener));
+  set('r_dep',     fmt(c_dep));
+  set('r_manut',   fmt(c_manut));
+  set('r_mdo',     fmt(c_mdo));
+  set('r_fixo',    fmt(c_fixo));
+  set('r_perda',   fmt(c_perda));
+  set('r_extra',   fmt(c_extra));
+  set('r_total',   fmt(total));
+  set('r_por_peca', fmt(por_peca));
+
+  // === Precificação ===
+  const modo = gs('modo_preco');
+  const imp_pct  = gv('impostos') / 100;
+
+  let plat_pct_val = 0;
+  const plat_sel = gs('taxa_plat');
+  if(plat_sel === 'custom_plat') {
+    plat_pct_val = gv('custom_plat_val') / 100;
+  } else {
+    plat_pct_val = parseFloat(plat_sel) / 100 || 0;
+  }
+
+  const desc_total = imp_pct + plat_pct_val;
+  let venda = 0, lucro = 0;
+
+  if(modo === 'margem') {
+    const margem = gv('margem') / 100;
+    const divisor = 1 - margem - desc_total;
+    venda = divisor > 0 ? total / divisor : total * (1 + margem);
+  } else {
+    venda = gv('preco_venda_input');
+  }
+
+  const v_imp   = venda * imp_pct;
+  const v_plat  = venda * plat_pct_val;
+  lucro = venda - total - v_imp - v_plat;
+  const margem_real = venda > 0 ? (lucro / venda * 100) : 0;
+
+  set('p_custo', fmt(total));
+  set('p_imp',   fmt(v_imp));
+  set('p_plat',  fmt(v_plat));
+  set('p_venda', fmt(venda));
+
+  const lucroEl = document.getElementById('p_lucro');
+  if(lucroEl) {
+    lucroEl.textContent = fmt(lucro);
+    lucroEl.className = 'metric-val ' + (lucro >= 0 ? 'green' : 'danger');
+  }
+  const margemEl = document.getElementById('p_margem_real');
+  if(margemEl) {
+    margemEl.textContent = fmtPct(margem_real);
+    margemEl.className = 'metric-val ' + (margem_real >= 20 ? 'green' : margem_real >= 0 ? '' : 'danger');
+  }
+
+  const avisoLucro = document.getElementById('aviso_lucro');
+  const avisoMargem = document.getElementById('aviso_margem_baixa');
+  if(avisoLucro) avisoLucro.classList.toggle('hidden', lucro >= 0);
+  if(avisoMargem) avisoMargem.classList.toggle('hidden', !(margem_real >= 0 && margem_real < 20));
+
+  // Cenários
+  buildScenarios(total, desc_total);
+}
+
+function buildScenarios(custo, desc_total) {
+  const wrap = document.getElementById('scenarios-wrap');
+  if(!wrap) return;
+  const cenarios = [
+    { label: 'Margem mínima (20%)', margem: 0.20 },
+    { label: 'Margem padrão (40%)', margem: 0.40 },
+    { label: 'Margem premium (60%)', margem: 0.60 },
+    { label: 'Markup 2× (100%)',     margem: 0.50 },
+  ];
+  wrap.innerHTML = cenarios.map(c => {
+    const divisor = 1 - c.margem - desc_total;
+    const venda = divisor > 0 ? custo / divisor : custo * 2;
+    const lucro = venda - custo - venda * desc_total;
+    return `<div class="rate-row">
+      <span class="rname">${c.label}</span>
+      <span style="display:flex;gap:12px;align-items:center">
+        <span style="font-size:12px;color:var(--text3);font-family:var(--mono)">lucro ${fmt(lucro)}</span>
+        <span class="rval">${fmt(venda)}</span>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+// init
+calc();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(r => console.log('SW registrado:', r.scope))
+      .catch(e => console.log('SW erro:', e));
+  });
+}
+</script>
+</body>
+</html>
