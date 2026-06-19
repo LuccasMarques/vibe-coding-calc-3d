@@ -458,6 +458,7 @@
     align-items: start;
   }
   @media(max-width: 800px) { .layout-sidebar { grid-template-columns: 1fr; } }
+  body.compact-project [data-advanced="1"] { display: none; }
 
   /* FOOTER */
   footer {
@@ -518,6 +519,101 @@
         <button class="btn btn-ghost" onclick="newPrinter()">Nova</button>
         <button class="btn btn-danger" onclick="deletePrinter()">Excluir</button>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Perfil rápido padrão</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:14px;max-width:72ch">Esses valores são carregados no projeto quando você escolhe esta impressora. Assim, no uso normal você só ajusta tempo e gramas.</p>
+      <div class="three-col">
+        <div class="field">
+          <label>Material padrão</label>
+          <div class="input-wrap">
+            <select id="default_material" onchange="toggleDefaultCustomFil()">
+              <option value="120">PLA — R$ 120/kg</option>
+              <option value="150">PETG — R$ 150/kg</option>
+              <option value="200">ABS — R$ 200/kg</option>
+              <option value="350">Resina — R$ 350/kg</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+        </div>
+        <div id="default_custom_fil_wrap" class="field" style="display:none">
+          <label>Filamento personalizado</label>
+          <div class="input-wrap">
+            <input type="number" id="default_custom_fil" value="120" min="0" step="5" oninput="calc()">
+            <span class="input-unit">R$/kg</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Monitoramento</label>
+          <div class="input-wrap">
+            <select id="default_inclui_mdo">
+              <option value="0">Não monitorado</option>
+              <option value="0.1" selected>Parcial — 10%</option>
+              <option value="0.2">Ativo — 20%</option>
+              <option value="1">Contínuo — 100%</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Pós-processamento</label>
+          <div class="input-wrap">
+            <input type="number" id="default_pos_proc" value="0.5" min="0" step="0.1">
+            <span class="input-unit">h</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Perda padrão</label>
+          <div class="input-wrap">
+            <input type="number" id="default_taxa_perda" value="10" min="0" max="40" step="1">
+            <span class="input-unit">%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Embalagem</label>
+          <div class="input-wrap">
+            <input type="number" id="default_embalagem" value="2.5" min="0" step="0.10">
+            <span class="input-unit">R$</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Perfil tributário</label>
+          <div class="input-wrap">
+            <select id="default_perfil_tributario" onchange="updateDefaultTaxProfile()">
+              <option value="cpf" selected>CPF</option>
+              <option value="mei">MEI</option>
+              <option value="simples">Simples</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Reserva de impostos</label>
+          <div class="input-wrap">
+            <input type="number" id="default_impostos" value="0" min="0" max="100" step="0.5">
+            <span class="input-unit">%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Taxa da plataforma</label>
+          <div class="input-wrap">
+            <select id="default_taxa_plat" onchange="toggleDefaultPlatformFields()">
+              <option value="0">Venda direta — 0%</option>
+              <option value="shopee_cpf_2026">Shopee Brasil — CPF 2026</option>
+              <option value="10">Mercado Livre — ~10%</option>
+              <option value="13">Mercado Livre Premium — ~13%</option>
+              <option value="custom_plat">Personalizado</option>
+            </select>
+          </div>
+        </div>
+        <div id="default_custom_plat_wrap" class="field" style="display:none">
+          <label>Taxa personalizada</label>
+          <div class="input-wrap">
+            <input type="number" id="default_custom_plat_val" value="0" min="0" max="50" step="0.5">
+            <span class="input-unit">%</span>
+          </div>
+        </div>
+      </div>
+      <p style="color:var(--text3);font-size:12px;margin-top:10px">Você pode guardar um perfil diferente para cada impressora. Ele vira o ponto de partida na calculadora.</p>
     </div>
     <div class="layout-sidebar">
       <div>
@@ -657,11 +753,56 @@
   <div class="page" id="page-projeto">
     <div class="page-header">
       <h2>// Custos do projeto</h2>
-      <p>Preencha os parâmetros de cada impressão para calcular o custo real.</p>
+      <p>O caminho rápido usa o perfil da impressora. Normalmente você só ajusta tempo e gramas.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Entrada rápida</div>
+      <div class="two-col">
+        <div class="field">
+          <label>Impressora</label>
+          <div class="input-wrap"><select id="project_printer" onchange="selectPrinter(this.value)"></select></div>
+        </div>
+        <div class="field">
+          <label>Aplicação automática do perfil</label>
+          <div class="input-wrap">
+            <select id="auto_profile" onchange="setAutoProfile(this.value === '1')">
+              <option value="1" selected>Ativada</option>
+              <option value="0">Desativada</option>
+            </select>
+          </div>
+          <span class="field-hint">Quando ativada, a impressora preenche os ajustes avançados para você.</span>
+        </div>
+        <div class="field">
+          <label>Tempo de impressão — horas</label>
+          <div class="input-wrap">
+            <input type="number" id="tempo_h" value="4" min="0" step="1" oninput="calc()">
+            <span class="input-unit">h</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tempo de impressão — minutos</label>
+          <div class="input-wrap">
+            <input type="number" id="tempo_m" value="30" min="0" max="59" oninput="calc()">
+            <span class="input-unit">min</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Peso do filamento usado</label>
+          <div class="input-wrap">
+            <input type="number" id="filamento_g" value="80" min="0" oninput="calc()">
+            <span class="input-unit">g</span>
+          </div>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn btn-accent" onclick="applyPrinterDefaults(true)">Reaplicar perfil</button>
+        <button id="toggle_advanced_btn" class="btn btn-ghost" onclick="toggleProjectCompactMode()">Mostrar ajustes avançados</button>
+        <button class="btn btn-ghost" onclick="switchPage('preco')">Ir para preço</button>
+      </div>
     </div>
     <div class="layout-sidebar">
       <div>
-        <div class="card">
+        <div class="card" data-advanced="1">
           <div class="card-title">Identificação (opcional)</div>
           <div class="two-col">
             <div class="field">
@@ -669,10 +810,6 @@
               <div class="input-wrap">
                 <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" style="font-family:var(--sans);padding-right:12px">
               </div>
-            </div>
-            <div class="field">
-              <label>Impressora</label>
-              <div class="input-wrap"><select id="project_printer" onchange="selectPrinter(this.value)"></select></div>
             </div>
             <div class="field">
               <label>Material / filamento</label>
@@ -697,30 +834,9 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-advanced="1">
           <div class="card-title">Parâmetros de impressão</div>
           <div class="two-col">
-            <div class="field">
-              <label>Tempo de impressão — horas</label>
-              <div class="input-wrap">
-                <input type="number" id="tempo_h" value="4" min="0" step="1" oninput="calc()">
-                <span class="input-unit">h</span>
-              </div>
-            </div>
-            <div class="field">
-              <label>Tempo de impressão — minutos</label>
-              <div class="input-wrap">
-                <input type="number" id="tempo_m" value="30" min="0" max="59" oninput="calc()">
-                <span class="input-unit">min</span>
-              </div>
-            </div>
-            <div class="field">
-              <label>Peso do filamento usado</label>
-              <div class="input-wrap">
-                <input type="number" id="filamento_g" value="80" min="0" oninput="calc()">
-                <span class="input-unit">g</span>
-              </div>
-            </div>
             <div class="field">
               <label>Pós-processamento / acabamento</label>
               <div class="input-wrap">
@@ -750,7 +866,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-advanced="1">
           <div class="card-title">Taxa de perda e retrabalho</div>
           <div class="slider-field">
             <div class="slider-label-row">
@@ -768,7 +884,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-advanced="1">
           <div class="card-title">Outros custos do projeto</div>
           <div class="two-col">
             <div class="field">
@@ -1051,8 +1167,12 @@ const DB_VERSION = 3;
 let db;
 let activePrinterId = null;
 let editingProductId = null;
+let autoProfileEnabled = localStorage.getItem('calc3d-auto-profile') !== '0';
+let compactProjectMode = localStorage.getItem('calc3d-project-compact') !== '0';
 
 const printerFields = ['valor_maq','vida_util','horas_dia','consumo_w','tarifa_kwh','valor_hora','custo_fixo','projetos_mes','manut_ano','insumos_mes'];
+const printerProfileFields = ['default_material','default_custom_fil','default_inclui_mdo','default_pos_proc','default_taxa_perda','default_embalagem','default_perfil_tributario','default_impostos','default_taxa_plat','default_custom_plat_val'];
+const printerProfileDefaults = {default_material:'120',default_custom_fil:120,default_inclui_mdo:.1,default_pos_proc:.5,default_taxa_perda:10,default_embalagem:2.5,default_perfil_tributario:'cpf',default_impostos:0,default_taxa_plat:0,default_custom_plat_val:0};
 const productFields = ['nome_proj','material','custom_fil','tempo_h','tempo_m','filamento_g','pos_proc','inclui_mdo','qtd_pecas','taxa_perda','embalagem','emb_protecao','emb_etiqueta','emb_brinde','frete','outros','modo_preco','base_preco','margem','preco_venda_input','perfil_tributario','impostos','taxa_plat','custom_plat_val','shopee_cpf_extra_on','shopee_cpf_extra','shopee_campanha','shopee_devolucao','shopee_cupom','shopee_ads','shopee_frete'];
 const productDefaults = {nome_proj:'',material:'120',custom_fil:120,tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,inclui_mdo:.1,qtd_pecas:1,taxa_perda:10,embalagem:2.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0};
 
@@ -1110,11 +1230,13 @@ async function initApp() {
   db = await openDB();
   let printers = await dbAll('printers');
   if(!printers.length) {
-    const initial = { id:uid(), name:'Impressora principal', model:'', ...valuesFrom(printerFields), createdAt:new Date().toISOString() };
+    const initial = { id:uid(), name:'Impressora principal', model:'', ...valuesFrom(printerFields), ...valuesFrom(printerProfileFields), createdAt:new Date().toISOString() };
     await dbPut('printers', initial); printers = [initial];
   }
   await renderPrinterSelects();
   await selectPrinter(printers[0].id);
+  syncAutoProfileToggle();
+  syncProjectCompactMode();
   await renderProducts();
   calc();
 }
@@ -1134,14 +1256,21 @@ async function selectPrinter(id) {
   document.getElementById('printer_name').value = printer.name || '';
   document.getElementById('printer_model').value = printer.model || '';
   applyValues(printer, printerFields);
+  applyValues({...printerProfileDefaults, ...printer}, printerProfileFields);
+  toggleDefaultCustomFil();
+  toggleDefaultPlatformFields();
+  updateDefaultTaxProfile();
   ['printer_select','project_printer'].forEach(x => document.getElementById(x).value = id);
+  if(autoProfileEnabled && document.getElementById('page-projeto').classList.contains('active')) {
+    await applyPrinterDefaults(false);
+  }
   calc();
 }
 async function savePrinter() {
   const name = document.getElementById('printer_name').value.trim();
   if(!name) return toast('Informe um nome para a impressora.');
   const old = activePrinterId ? await dbGet('printers', activePrinterId) : null;
-  const printer = { ...(old || {}), id:activePrinterId || uid(), name, model:document.getElementById('printer_model').value.trim(), ...valuesFrom(printerFields), updatedAt:new Date().toISOString() };
+  const printer = { ...(old || {}), id:activePrinterId || uid(), name, model:document.getElementById('printer_model').value.trim(), ...valuesFrom(printerFields), ...valuesFrom(printerProfileFields), updatedAt:new Date().toISOString() };
   delete printer.preco_fil_kg;
   await dbPut('printers', printer); activePrinterId = printer.id;
   await renderPrinterSelects(); await selectPrinter(printer.id); toast('Impressora salva.');
@@ -1151,6 +1280,10 @@ function newPrinter() {
   document.getElementById('printer_name').value = '';
   document.getElementById('printer_model').value = '';
   applyValues({valor_maq:3000,vida_util:5,horas_dia:8,consumo_w:120,tarifa_kwh:.85,valor_hora:25,custo_fixo:0,projetos_mes:20,manut_ano:300,insumos_mes:30}, printerFields);
+  applyValues(printerProfileDefaults, printerProfileFields);
+  toggleDefaultCustomFil();
+  toggleDefaultPlatformFields();
+  updateDefaultTaxProfile();
   calc(); document.getElementById('printer_name').focus();
 }
 async function deletePrinter() {
@@ -1174,10 +1307,11 @@ async function saveProduct() {
   await dbPut('products', product); editingProductId = product.id;
   await renderProducts(); toast(old ? 'Produto atualizado.' : 'Produto salvo.');
 }
-function newProduct() {
+async function newProduct() {
   editingProductId = null;
   applyValues(productDefaults, productFields);
   updateMaterial(); toggleModo(); updatePlatformFields(); document.getElementById('sl_perda').textContent='10%'; switchPage('projeto');
+  await applyPrinterDefaults(true);
 }
 async function editProduct(id) {
   const p = await dbGet('products', id); if(!p) return;
@@ -1244,6 +1378,8 @@ function switchPage(name) {
   const tab = document.querySelector(`.nav-tab[data-page="${name}"]`);
   if(tab) tab.classList.add('active');
   if(name === 'produtos') renderProducts();
+  if(name === 'projeto') syncProjectCompactMode();
+  if(name === 'projeto' && autoProfileEnabled) applyPrinterDefaults(false);
   calc();
 }
 
@@ -1264,6 +1400,74 @@ function toggleModo() {
   const m = gs('modo_preco');
   document.getElementById('campo_margem').style.display = m === 'margem' ? '' : 'none';
   document.getElementById('campo_preco_venda').style.display = m === 'preco' ? '' : 'none';
+}
+
+function syncAutoProfileToggle() {
+  const el = document.getElementById('auto_profile');
+  if(el) el.value = autoProfileEnabled ? '1' : '0';
+}
+
+function syncProjectCompactMode() {
+  document.body.classList.toggle('compact-project', compactProjectMode);
+  const btn = document.getElementById('toggle_advanced_btn');
+  if(btn) btn.textContent = compactProjectMode ? 'Mostrar ajustes avançados' : 'Ocultar ajustes avançados';
+}
+
+async function setAutoProfile(enabled) {
+  autoProfileEnabled = !!enabled;
+  localStorage.setItem('calc3d-auto-profile', autoProfileEnabled ? '1' : '0');
+  if(autoProfileEnabled) await applyPrinterDefaults(false);
+}
+
+function toggleProjectCompactMode() {
+  compactProjectMode = !compactProjectMode;
+  localStorage.setItem('calc3d-project-compact', compactProjectMode ? '1' : '0');
+  syncProjectCompactMode();
+}
+
+async function applyPrinterDefaults(force) {
+  const selectedPrinterId = document.getElementById('project_printer') ? document.getElementById('project_printer').value : activePrinterId;
+  if(!selectedPrinterId) return;
+  const current = await dbGet('printers', selectedPrinterId);
+  if(!current) return;
+  const defaults = { ...printerProfileDefaults, ...current };
+  if(!(force || autoProfileEnabled)) return;
+  document.getElementById('material').value = defaults.default_material || '120';
+  document.getElementById('custom_fil').value = defaults.default_custom_fil ?? 120;
+  document.getElementById('pos_proc').value = defaults.default_pos_proc ?? 0.5;
+  document.getElementById('inclui_mdo').value = String(defaults.default_inclui_mdo ?? 0.1);
+  document.getElementById('taxa_perda').value = defaults.default_taxa_perda ?? 10;
+  document.getElementById('sl_perda').textContent = (defaults.default_taxa_perda ?? 10) + '%';
+  document.getElementById('embalagem').value = defaults.default_embalagem ?? 2.5;
+  document.getElementById('perfil_tributario').value = defaults.default_perfil_tributario || 'cpf';
+  document.getElementById('impostos').value = defaults.default_impostos ?? 0;
+  document.getElementById('taxa_plat').value = defaults.default_taxa_plat || 0;
+  document.getElementById('custom_plat_val').value = defaults.default_custom_plat_val ?? 0;
+  updateMaterial();
+  toggleModo();
+  updatePlatformFields();
+  calc();
+}
+
+function toggleDefaultCustomFil() {
+  const sel = gs('default_material');
+  const wrap = document.getElementById('default_custom_fil_wrap');
+  if(!wrap) return;
+  wrap.style.display = sel === 'custom' ? '' : 'none';
+}
+
+function updateDefaultTaxProfile() {
+  const profile = gs('default_perfil_tributario');
+  const input = document.getElementById('default_impostos');
+  if(!input) return;
+  if(profile === 'cpf' || profile === 'mei') input.value = 0;
+  if(profile === 'simples') input.value = 6;
+}
+
+function toggleDefaultPlatformFields() {
+  const value = gs('default_taxa_plat');
+  const wrap = document.getElementById('default_custom_plat_wrap');
+  if(wrap) wrap.style.display = value === 'custom_plat' ? '' : 'none';
 }
 
 // ── Taxa plataforma personalizada ─────────────────────────────────────────────
