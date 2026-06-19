@@ -7,6 +7,8 @@ Calculadora PWA de custos e precificação para impressão 3D.
 - Cadastro de múltiplas impressoras com custos independentes
 - Cálculo de material, energia, depreciação, manutenção e mão de obra
 - Catálogo local de produtos com edição e duplicação
+- Precificação Shopee CPF 2026 por faixa, tarifa fixa e adicionais configuráveis
+- Composição detalhada dos custos de embalagem
 - Backup e restauração em JSON
 - Funcionamento offline por service worker
 

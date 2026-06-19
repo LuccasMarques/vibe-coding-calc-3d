@@ -4,8 +4,8 @@
   "description": "Calcule custos e preços de venda para impressão 3D",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0d0f0f",
-  "theme_color": "#00e5b0",
+  "background_color": "#eef2f5",
+  "theme_color": "#0f766e",
   "orientation": "portrait-primary",
   "lang": "pt-BR",
   "icons": [

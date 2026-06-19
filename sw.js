@@ -1,4 +1,4 @@
-const CACHE = 'calc3d-v2';
+const CACHE = 'calc3d-v4';
 const ASSETS = [
   './',
   './index.html',
