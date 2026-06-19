@@ -1,11 +1,10 @@
-const CACHE = 'calc3d-v1';
+const CACHE = 'calc3d-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {
@@ -31,7 +30,7 @@ self.addEventListener('fetch', e => {
         const clone = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, clone));
         return res;
-      }).catch(() => caches.match('./index.html'));
+      }).catch(() => e.request.mode === 'navigate' ? caches.match('./index.html') : Response.error());
     })
   );
 });

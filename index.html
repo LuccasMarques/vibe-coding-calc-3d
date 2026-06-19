@@ -143,6 +143,9 @@
   @media(max-width: 700px) {
     .two-col, .three-col { grid-template-columns: 1fr; }
     .nav-tab { padding: 6px 10px; font-size: 12px; }
+    .header-inner { gap: 0; }
+    .header-inner .logo { display: none; }
+    .nav-tabs { width: 100%; overflow-x: auto; }
     main { padding: 1rem; }
     header { padding: 0 1rem; }
   }
@@ -390,6 +393,21 @@
   .btn-accent:hover { background: #00ffca; }
   .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: transparent; border: 1px solid rgba(255,95,95,.45); color: var(--danger); }
+  .btn-small { padding: 7px 11px; font-size: 12px; }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .toolbar { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; }
+  .toolbar .input-wrap { min-width:240px; flex:1; }
+  .catalog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+  .catalog-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.1rem; }
+  .catalog-card h3 { font-family:var(--mono); font-size:15px; margin-bottom:4px; }
+  .catalog-meta { color:var(--text3); font-size:12px; margin-bottom:12px; }
+  .catalog-values { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .catalog-values div { background:var(--bg); border-radius:8px; padding:8px; font-size:11px; color:var(--text3); }
+  .catalog-values strong { display:block; color:var(--accent); font-family:var(--mono); font-size:14px; }
+  .empty-state { border:1px dashed var(--border2); border-radius:var(--radius-lg); padding:2rem; text-align:center; color:var(--text3); }
+  .toast { position:fixed; right:20px; bottom:20px; z-index:500; background:var(--surface2); border:1px solid var(--accent); color:var(--text); padding:11px 16px; border-radius:var(--radius); box-shadow:0 12px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(8px); pointer-events:none; transition:.2s; }
+  .toast.show { opacity:1; transform:none; }
 
   /* RATE TABLE */
   .rate-row {
@@ -437,9 +455,10 @@
       <span>CALC3D</span>
     </div>
     <nav class="nav-tabs">
-      <button class="nav-tab active" onclick="switchPage('maquina')">⚙ Máquina</button>
-      <button class="nav-tab" onclick="switchPage('projeto')">◈ Projeto</button>
-      <button class="nav-tab" onclick="switchPage('preco')">R$ Precificação</button>
+      <button class="nav-tab active" data-page="maquina" onclick="switchPage('maquina')">⚙ Impressoras</button>
+      <button class="nav-tab" data-page="projeto" onclick="switchPage('projeto')">◈ Calculadora</button>
+      <button class="nav-tab" data-page="preco" onclick="switchPage('preco')">R$ Precificação</button>
+      <button class="nav-tab" data-page="produtos" onclick="switchPage('produtos')">▦ Produtos</button>
     </nav>
   </div>
 </header>
@@ -449,8 +468,21 @@
   <!-- ======================== PÁGINA: MÁQUINA ======================== -->
   <div class="page active" id="page-maquina">
     <div class="page-header">
-      <h2>// Configuração da máquina</h2>
-      <p>Configure uma vez. Esses valores serão usados em todos os cálculos de projeto.</p>
+      <h2>// Impressoras</h2>
+      <p>Cadastre cada máquina para aplicar seus custos reais aos produtos.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Perfil selecionado</div>
+      <div class="three-col">
+        <div class="field"><label>Impressora</label><div class="input-wrap"><select id="printer_select" onchange="selectPrinter(this.value)"></select></div></div>
+        <div class="field"><label>Nome</label><div class="input-wrap"><input id="printer_name" type="text" value="Impressora principal" style="padding-right:12px"></div></div>
+        <div class="field"><label>Modelo</label><div class="input-wrap"><input id="printer_model" type="text" placeholder="Ex: Ender 3 V3" style="padding-right:12px"></div></div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn btn-accent" onclick="savePrinter()">Salvar impressora</button>
+        <button class="btn btn-ghost" onclick="newPrinter()">Nova</button>
+        <button class="btn btn-danger" onclick="deletePrinter()">Excluir</button>
+      </div>
     </div>
     <div class="layout-sidebar">
       <div>
@@ -613,6 +645,10 @@
               <div class="input-wrap">
                 <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" style="font-family:var(--sans);padding-right:12px">
               </div>
+            </div>
+            <div class="field">
+              <label>Impressora</label>
+              <div class="input-wrap"><select id="project_printer" onchange="selectPrinter(this.value)"></select></div>
             </div>
             <div class="field">
               <label>Material / filamento</label>
@@ -783,6 +819,7 @@
         <button class="btn btn-accent" style="width:100%;margin-top:10px;justify-content:center" onclick="switchPage('preco')">
           Calcular preço de venda →
         </button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px;justify-content:center" onclick="saveProduct()">Salvar produto</button>
       </div>
     </div>
   </div>
@@ -902,17 +939,206 @@
         <div id="aviso_margem_baixa" class="alert alert-warn hidden" style="margin-top:10px">
           ⚠ Margem abaixo de 20%. Revise se os custos fixos estão cobertos.
         </div>
+        <button class="btn btn-accent" style="width:100%;margin-top:10px;justify-content:center" onclick="saveProduct()">Salvar produto com este preço</button>
       </div>
     </div>
   </div>
 
+  <!-- ======================== PÁGINA: PRODUTOS ======================== -->
+  <div class="page" id="page-produtos">
+    <div class="page-header">
+      <h2>// Produtos salvos</h2>
+      <p>Seu catálogo local de custos e preços. Os dados ficam neste dispositivo.</p>
+    </div>
+    <div class="toolbar">
+      <div class="input-wrap"><input id="product_search" type="search" placeholder="Buscar produto..." oninput="renderProducts()" style="padding-right:12px"></div>
+      <div class="actions">
+        <button class="btn btn-accent" onclick="newProduct()">Novo produto</button>
+        <button class="btn btn-ghost" onclick="exportBackup()">Exportar backup</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('backup_file').click()">Importar backup</button>
+        <input id="backup_file" type="file" accept="application/json" hidden onchange="importBackup(this.files[0])">
+      </div>
+    </div>
+    <div id="products_grid" class="catalog-grid"></div>
+  </div>
+
 </main>
+
+<div id="toast" class="toast"></div>
 
 <footer>
   CALC3D — Calculadora de Impressão 3D &nbsp;|&nbsp; <span>feito com ♥</span> para makers brasileiros
 </footer>
 
 <script>
+// ── Banco local e estado ─────────────────────────────────────────────────────
+const DB_NAME = 'calc3d-db';
+const DB_VERSION = 1;
+let db;
+let activePrinterId = null;
+let editingProductId = null;
+
+const printerFields = ['valor_maq','vida_util','horas_dia','consumo_w','tarifa_kwh','preco_fil_kg','valor_hora','custo_fixo','projetos_mes','manut_ano','insumos_mes'];
+const productFields = ['nome_proj','material','custom_fil','tempo_h','tempo_m','filamento_g','pos_proc','inclui_mdo','qtd_pecas','taxa_perda','embalagem','frete','outros','modo_preco','margem','preco_venda_input','impostos','taxa_plat','custom_plat_val'];
+
+function uid() { return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if(!database.objectStoreNames.contains('printers')) database.createObjectStore('printers', { keyPath:'id' });
+      if(!database.objectStoreNames.contains('products')) database.createObjectStore('products', { keyPath:'id' });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+function storeAction(store, mode, action) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, mode);
+    const request = action(tx.objectStore(store));
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+const dbAll = store => storeAction(store, 'readonly', s => s.getAll());
+const dbGet = (store, id) => storeAction(store, 'readonly', s => s.get(id));
+const dbPut = (store, value) => storeAction(store, 'readwrite', s => s.put(value));
+const dbDelete = (store, id) => storeAction(store, 'readwrite', s => s.delete(id));
+function dbClear(store) { return storeAction(store, 'readwrite', s => s.clear()); }
+
+function toast(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message; el.classList.add('show');
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+function valuesFrom(ids) { return Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])); }
+function applyValues(values, ids) { ids.forEach(id => { if(values[id] !== undefined) document.getElementById(id).value = values[id]; }); }
+function moneyFrom(id) {
+  const text = document.getElementById(id).textContent.replace('R$','').trim().replace(/\./g,'').replace(',','.');
+  return parseFloat(text) || 0;
+}
+
+async function initApp() {
+  db = await openDB();
+  let printers = await dbAll('printers');
+  if(!printers.length) {
+    const initial = { id:uid(), name:'Impressora principal', model:'', ...valuesFrom(printerFields), createdAt:new Date().toISOString() };
+    await dbPut('printers', initial); printers = [initial];
+  }
+  await renderPrinterSelects();
+  await selectPrinter(printers[0].id);
+  await renderProducts();
+  calc();
+}
+
+async function renderPrinterSelects() {
+  const printers = await dbAll('printers');
+  const options = printers.map(p => `<option value="${p.id}">${escapeHtml(p.name)}${p.model ? ' — '+escapeHtml(p.model) : ''}</option>`).join('');
+  ['printer_select','project_printer'].forEach(id => {
+    const el = document.getElementById(id); el.innerHTML = options;
+    if(activePrinterId) el.value = activePrinterId;
+  });
+}
+async function selectPrinter(id) {
+  if(!id) return;
+  const printer = await dbGet('printers', id); if(!printer) return;
+  activePrinterId = id;
+  document.getElementById('printer_name').value = printer.name || '';
+  document.getElementById('printer_model').value = printer.model || '';
+  applyValues(printer, printerFields);
+  ['printer_select','project_printer'].forEach(x => document.getElementById(x).value = id);
+  calc();
+}
+async function savePrinter() {
+  const name = document.getElementById('printer_name').value.trim();
+  if(!name) return toast('Informe um nome para a impressora.');
+  const old = activePrinterId ? await dbGet('printers', activePrinterId) : null;
+  const printer = { ...(old || {}), id:activePrinterId || uid(), name, model:document.getElementById('printer_model').value.trim(), ...valuesFrom(printerFields), updatedAt:new Date().toISOString() };
+  await dbPut('printers', printer); activePrinterId = printer.id;
+  await renderPrinterSelects(); await selectPrinter(printer.id); toast('Impressora salva.');
+}
+function newPrinter() {
+  activePrinterId = null;
+  document.getElementById('printer_name').value = '';
+  document.getElementById('printer_model').value = '';
+  applyValues({valor_maq:3000,vida_util:5,horas_dia:8,consumo_w:120,tarifa_kwh:.85,preco_fil_kg:120,valor_hora:25,custo_fixo:0,projetos_mes:20,manut_ano:300,insumos_mes:30}, printerFields);
+  calc(); document.getElementById('printer_name').focus();
+}
+async function deletePrinter() {
+  if(!activePrinterId) return;
+  const products = await dbAll('products');
+  if(products.some(p => p.printerId === activePrinterId)) return toast('Essa impressora está vinculada a produtos.');
+  const printers = await dbAll('printers');
+  if(printers.length === 1) return toast('Mantenha pelo menos uma impressora.');
+  if(!confirm('Excluir esta impressora?')) return;
+  await dbDelete('printers', activePrinterId); activePrinterId = null;
+  await renderPrinterSelects(); const remaining = await dbAll('printers'); await selectPrinter(remaining[0].id); toast('Impressora excluída.');
+}
+
+function escapeHtml(value='') { const el=document.createElement('div'); el.textContent=value; return el.innerHTML; }
+async function saveProduct() {
+  const name = document.getElementById('nome_proj').value.trim();
+  if(!name) { switchPage('projeto'); document.getElementById('nome_proj').focus(); return toast('Dê um nome ao produto antes de salvar.'); }
+  calc();
+  const old = editingProductId ? await dbGet('products', editingProductId) : null;
+  const product = { ...(old || {}), id:editingProductId || uid(), printerId:activePrinterId, ...valuesFrom(productFields), cost:moneyFrom('r_total'), unitCost:moneyFrom('r_por_peca'), salePrice:moneyFrom('p_venda'), updatedAt:new Date().toISOString() };
+  await dbPut('products', product); editingProductId = product.id;
+  await renderProducts(); toast(old ? 'Produto atualizado.' : 'Produto salvo.');
+}
+function newProduct() {
+  editingProductId = null;
+  applyValues({nome_proj:'',material:'120',custom_fil:120,tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,inclui_mdo:.1,qtd_pecas:1,taxa_perda:10,embalagem:2.5,frete:0,outros:0,modo_preco:'margem',margem:40,preco_venda_input:0,impostos:6,taxa_plat:0,custom_plat_val:0}, productFields);
+  updateMaterial(); toggleModo(); document.getElementById('sl_perda').textContent='10%'; switchPage('projeto');
+}
+async function editProduct(id) {
+  const p = await dbGet('products', id); if(!p) return;
+  editingProductId = id; if(p.printerId) await selectPrinter(p.printerId);
+  applyValues(p, productFields); updateMaterial(); toggleModo();
+  document.getElementById('custom_plat_wrap').style.display = p.taxa_plat === 'custom_plat' ? '' : 'none';
+  document.getElementById('sl_perda').textContent = (p.taxa_perda || 0) + '%'; calc(); switchPage('projeto'); toast('Produto carregado para edição.');
+}
+async function duplicateProduct(id) {
+  const p = await dbGet('products', id); if(!p) return;
+  const copy = {...p, id:uid(), nome_proj:p.nome_proj+' (cópia)', updatedAt:new Date().toISOString()};
+  await dbPut('products', copy); await renderProducts(); toast('Produto duplicado.');
+}
+async function deleteProduct(id) {
+  if(!confirm('Excluir este produto?')) return;
+  await dbDelete('products', id); if(editingProductId === id) editingProductId = null; await renderProducts(); toast('Produto excluído.');
+}
+async function renderProducts() {
+  if(!db) return;
+  const grid = document.getElementById('products_grid');
+  const query = (document.getElementById('product_search').value || '').toLowerCase();
+  const [products, printers] = await Promise.all([dbAll('products'), dbAll('printers')]);
+  const printerNames = Object.fromEntries(printers.map(p => [p.id,p.name]));
+  const filtered = products.filter(p => (p.nome_proj || '').toLowerCase().includes(query)).sort((a,b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
+  if(!filtered.length) { grid.innerHTML='<div class="empty-state">Nenhum produto encontrado.<br>Crie um produto pela calculadora.</div>'; return; }
+  grid.innerHTML = filtered.map(p => `<article class="catalog-card"><h3>${escapeHtml(p.nome_proj)}</h3><div class="catalog-meta">${escapeHtml(printerNames[p.printerId] || 'Impressora não encontrada')} · ${escapeHtml(p.material === 'custom' ? 'Material personalizado' : 'R$ '+p.material+'/kg')}</div><div class="catalog-values"><div>Custo unitário<strong>${fmt(Number(p.unitCost)||0)}</strong></div><div>Preço de venda<strong>${fmt(Number(p.salePrice)||0)}</strong></div></div><div class="actions"><button class="btn btn-accent btn-small" onclick="editProduct('${p.id}')">Editar</button><button class="btn btn-ghost btn-small" onclick="duplicateProduct('${p.id}')">Duplicar</button><button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">Excluir</button></div></article>`).join('');
+}
+
+async function exportBackup() {
+  const data = { app:'CALC3D', version:1, exportedAt:new Date().toISOString(), printers:await dbAll('printers'), products:await dbAll('products') };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`calc3d-backup-${new Date().toISOString().slice(0,10)}.json`; link.click(); URL.revokeObjectURL(link.href); toast('Backup exportado.');
+}
+async function importBackup(file) {
+  if(!file) return;
+  try {
+    const data=JSON.parse(await file.text());
+    if(data.app !== 'CALC3D' || !Array.isArray(data.printers) || !data.printers.length || !Array.isArray(data.products)) throw new Error('Formato inválido');
+    if(!confirm('A importação substituirá os dados locais. Continuar?')) return;
+    await dbClear('printers'); await dbClear('products');
+    for(const p of data.printers) await dbPut('printers',p);
+    for(const p of data.products) await dbPut('products',p);
+    activePrinterId=null; editingProductId=null; await renderPrinterSelects(); const printers=await dbAll('printers');
+    if(printers.length) await selectPrinter(printers[0].id); await renderProducts(); toast('Backup restaurado.');
+  } catch(e) { toast('Não foi possível importar esse arquivo.'); }
+  finally { document.getElementById('backup_file').value=''; }
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function gs(id) { return document.getElementById(id).value; }
@@ -929,8 +1155,9 @@ function switchPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  const tabs = { maquina: 0, projeto: 1, preco: 2 };
-  document.querySelectorAll('.nav-tab')[tabs[name]].classList.add('active');
+  const tab = document.querySelector(`.nav-tab[data-page="${name}"]`);
+  if(tab) tab.classList.add('active');
+  if(name === 'produtos') renderProducts();
   calc();
 }
 
@@ -942,7 +1169,6 @@ function updateMaterial() {
     wrap.style.display = '';
   } else {
     wrap.style.display = 'none';
-    document.getElementById('preco_fil_kg').value = sel;
     calc();
   }
 }
@@ -974,8 +1200,7 @@ function calc() {
   const insumos_mes  = gv('insumos_mes');
   const valor_hora   = gv('valor_hora');
 
-  let preco_fil_kg = gv('preco_fil_kg');
-  if(gs('material') === 'custom') preco_fil_kg = gv('custom_fil');
+  let preco_fil_kg = gs('material') === 'custom' ? gv('custom_fil') : (parseFloat(gs('material')) || gv('preco_fil_kg'));
 
   const horas_total = vida_util * 365 * horas_dia;
   const dep_h = horas_total > 0 ? valor_maq / horas_total : 0;
@@ -1100,7 +1325,7 @@ function buildScenarios(custo, desc_total) {
 }
 
 // init
-calc();
+initApp().catch(error => { console.error(error); toast('Falha ao abrir o banco local.'); calc(); });
 </script>
 
 <script>
