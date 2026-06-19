@@ -527,30 +527,9 @@
         <div class="field">
           <label>Material padrão</label>
           <div class="input-wrap">
-            <select id="default_material" onchange="toggleDefaultCustomFil()">
-              <option value="120">PLA — R$ 120/kg</option>
-              <option value="150">PETG — R$ 150/kg</option>
-              <option value="200">ABS — R$ 200/kg</option>
-              <option value="350">Resina — R$ 350/kg</option>
-              <option value="custom">Personalizado</option>
-            </select>
-          </div>
-        </div>
-        <div id="default_custom_fil_wrap" class="field" style="display:none">
-          <label>Filamento personalizado</label>
-          <div class="input-wrap">
-            <input type="number" id="default_custom_fil" value="120" min="0" step="5" oninput="calc()">
-            <span class="input-unit">R$/kg</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Monitoramento</label>
-          <div class="input-wrap">
-            <select id="default_inclui_mdo">
-              <option value="0">Não monitorado</option>
-              <option value="0.1" selected>Parcial — 10%</option>
-              <option value="0.2">Ativo — 20%</option>
-              <option value="1">Contínuo — 100%</option>
+            <select id="default_material">
+              <option value="100">PLA — R$ 100/kg</option>
+              <option value="80">PETG — R$ 80/kg</option>
             </select>
           </div>
         </div>
@@ -564,14 +543,14 @@
         <div class="field">
           <label>Perda padrão</label>
           <div class="input-wrap">
-            <input type="number" id="default_taxa_perda" value="10" min="0" max="40" step="1">
+            <input type="number" id="default_taxa_perda" value="15" min="0" max="40" step="1">
             <span class="input-unit">%</span>
           </div>
         </div>
         <div class="field">
           <label>Embalagem</label>
           <div class="input-wrap">
-            <input type="number" id="default_embalagem" value="2.5" min="0" step="0.10">
+            <input type="number" id="default_embalagem" value="1.5" min="0" step="0.10">
             <span class="input-unit">R$</span>
           </div>
         </div>
@@ -800,16 +779,6 @@
         <button class="btn btn-ghost" onclick="switchPage('preco')">Ir para preço</button>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Presets rápidos</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:14px;max-width:72ch">Escolha um ponto de partida e depois ajuste só o essencial. Você também pode criar seus próprios hábitos usando as impressoras salvas.</p>
-      <div class="two-col">
-        <button class="btn btn-ghost" onclick="applyQuickPreset('mini')">Peça pequena</button>
-        <button class="btn btn-ghost" onclick="applyQuickPreset('media')">Peça média</button>
-        <button class="btn btn-ghost" onclick="applyQuickPreset('grande')">Peça grande</button>
-        <button class="btn btn-ghost" onclick="applyQuickPreset('lote')">Lote / kit</button>
-      </div>
-    </div>
     <div class="layout-sidebar">
       <div>
         <div class="card" data-advanced="1">
@@ -821,25 +790,15 @@
                 <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" style="font-family:var(--sans);padding-right:12px">
               </div>
             </div>
-            <div class="field">
-              <label>Material / filamento</label>
-              <div class="input-wrap">
-                <select id="material" onchange="updateMaterial()">
-                  <option value="120">PLA — R$ 120/kg (padrão)</option>
-                  <option value="150">PETG — R$ 150/kg</option>
-                  <option value="200">ABS — R$ 200/kg</option>
-                  <option value="350">Resina — R$ 350/kg</option>
-                  <option value="custom">Personalizado</option>
+        <div class="field">
+          <label>Material / filamento</label>
+          <div class="input-wrap">
+            <select id="material" onchange="updateMaterial()">
+                  <option value="100">PLA — R$ 100/kg (padrão)</option>
+                  <option value="80">PETG — R$ 80/kg</option>
                 </select>
               </div>
               <span class="field-hint">Este preço pertence ao produto, não à impressora.</span>
-            </div>
-          </div>
-          <div id="custom_fil_wrap" class="field" style="margin-top:12px;display:none">
-            <label>Preço do filamento personalizado</label>
-            <div class="input-wrap">
-              <input type="number" id="custom_fil" value="120" min="0" oninput="calc()">
-              <span class="input-unit">R$/kg</span>
             </div>
           </div>
         </div>
@@ -856,17 +815,6 @@
               <span class="field-hint">Lixamento, pintura, montagem…</span>
             </div>
             <div class="field">
-              <label>Monitoramento durante impressão</label>
-              <div class="input-wrap">
-                <select id="inclui_mdo" onchange="calc()">
-                  <option value="0">Não monitorado</option>
-                  <option value="0.1" selected>Parcial — 10% do tempo</option>
-                  <option value="0.2">Ativo — 20% do tempo</option>
-                  <option value="1">Contínuo — 100% do tempo</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
               <label>Quantidade de peças</label>
               <div class="input-wrap">
                 <input type="number" id="qtd_pecas" value="1" min="1" oninput="calc()">
@@ -881,9 +829,9 @@
           <div class="slider-field">
             <div class="slider-label-row">
               <label>Falha / desperdício / suporte descartado</label>
-              <span class="slider-value" id="sl_perda">10%</span>
+              <span class="slider-value" id="sl_perda">15%</span>
             </div>
-            <input type="range" id="taxa_perda" min="0" max="40" value="10" step="1" oninput="document.getElementById('sl_perda').textContent=this.value+'%';calc()">
+            <input type="range" id="taxa_perda" min="0" max="40" value="15" step="1" oninput="document.getElementById('sl_perda').textContent=this.value+'%';calc()">
             <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:2px">
               <span>0% — sem perda</span>
               <span>40% — alto retrabalho</span>
@@ -900,7 +848,7 @@
             <div class="field">
               <label>Caixa / envelope</label>
               <div class="input-wrap">
-                <input type="number" id="embalagem" value="2.50" min="0" step="0.10" oninput="calc()">
+                <input type="number" id="embalagem" value="1.50" min="0" step="0.10" oninput="calc()">
                 <span class="input-unit">R$</span>
               </div>
             </div>
@@ -1181,16 +1129,10 @@ let autoProfileEnabled = localStorage.getItem('calc3d-auto-profile') !== '0';
 let compactProjectMode = localStorage.getItem('calc3d-project-compact') !== '0';
 
 const printerFields = ['valor_maq','vida_util','horas_dia','consumo_w','tarifa_kwh','valor_hora','custo_fixo','projetos_mes','manut_ano','insumos_mes'];
-const printerProfileFields = ['default_material','default_custom_fil','default_inclui_mdo','default_pos_proc','default_taxa_perda','default_embalagem','default_perfil_tributario','default_impostos','default_taxa_plat','default_custom_plat_val'];
-const printerProfileDefaults = {default_material:'120',default_custom_fil:120,default_inclui_mdo:.1,default_pos_proc:.5,default_taxa_perda:10,default_embalagem:2.5,default_perfil_tributario:'cpf',default_impostos:0,default_taxa_plat:0,default_custom_plat_val:0};
-const productFields = ['nome_proj','material','custom_fil','tempo_h','tempo_m','filamento_g','pos_proc','inclui_mdo','qtd_pecas','taxa_perda','embalagem','emb_protecao','emb_etiqueta','emb_brinde','frete','outros','modo_preco','base_preco','margem','preco_venda_input','perfil_tributario','impostos','taxa_plat','custom_plat_val','shopee_cpf_extra_on','shopee_cpf_extra','shopee_campanha','shopee_devolucao','shopee_cupom','shopee_ads','shopee_frete'];
-const productDefaults = {nome_proj:'',material:'120',custom_fil:120,tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,inclui_mdo:.1,qtd_pecas:1,taxa_perda:10,embalagem:2.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0};
-const QUICK_PRESETS = {
-  mini:   { label:'Peça pequena', tempo_h:1, tempo_m:20, filamento_g:18, pos_proc:0.2, inclui_mdo:0.1, taxa_perda:8, embalagem:1.5, qtd_pecas:1 },
-  media:  { label:'Peça média',    tempo_h:3, tempo_m:0,  filamento_g:45, pos_proc:0.5, inclui_mdo:0.1, taxa_perda:10, embalagem:2.5, qtd_pecas:1 },
-  grande: { label:'Peça grande',   tempo_h:8, tempo_m:30, filamento_g:120, pos_proc:1.0, inclui_mdo:0.2, taxa_perda:15, embalagem:4.0, qtd_pecas:1 },
-  lote:   { label:'Lote / kit',    tempo_h:12, tempo_m:0, filamento_g:300, pos_proc:1.5, inclui_mdo:0.2, taxa_perda:12, embalagem:6.0, qtd_pecas:4 }
-};
+const printerProfileFields = ['default_material','default_pos_proc','default_taxa_perda','default_embalagem','default_perfil_tributario','default_impostos','default_taxa_plat','default_custom_plat_val'];
+const printerProfileDefaults = {default_material:'100',default_pos_proc:.5,default_taxa_perda:15,default_embalagem:1.5,default_perfil_tributario:'cpf',default_impostos:0,default_taxa_plat:0,default_custom_plat_val:0};
+const productFields = ['nome_proj','material','tempo_h','tempo_m','filamento_g','pos_proc','qtd_pecas','taxa_perda','embalagem','emb_protecao','emb_etiqueta','emb_brinde','frete','outros','modo_preco','base_preco','margem','preco_venda_input','perfil_tributario','impostos','taxa_plat','custom_plat_val','shopee_cpf_extra_on','shopee_cpf_extra','shopee_campanha','shopee_devolucao','shopee_cupom','shopee_ads','shopee_frete'];
+const productDefaults = {nome_proj:'',material:'100',tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,qtd_pecas:1,taxa_perda:15,embalagem:1.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0};
 
 function uid() { return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
 function openDB() {
@@ -1237,6 +1179,11 @@ function toast(message) {
 }
 function valuesFrom(ids) { return Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])); }
 function applyValues(values, ids) { ids.forEach(id => { if(values[id] !== undefined) document.getElementById(id).value = values[id]; }); }
+function normalizeMaterial(value) {
+  const allowed = ['100', '80'];
+  const text = String(value ?? '');
+  return allowed.includes(text) ? text : '100';
+}
 function moneyFrom(id) {
   const text = document.getElementById(id).textContent.replace('R$','').trim().replace(/\./g,'').replace(',','.');
   return parseFloat(text) || 0;
@@ -1273,7 +1220,7 @@ async function selectPrinter(id) {
   document.getElementById('printer_model').value = printer.model || '';
   applyValues(printer, printerFields);
   applyValues({...printerProfileDefaults, ...printer}, printerProfileFields);
-  toggleDefaultCustomFil();
+  document.getElementById('default_material').value = normalizeMaterial(printer.default_material);
   toggleDefaultPlatformFields();
   updateDefaultTaxProfile();
   ['printer_select','project_printer'].forEach(x => document.getElementById(x).value = id);
@@ -1297,7 +1244,6 @@ function newPrinter() {
   document.getElementById('printer_model').value = '';
   applyValues({valor_maq:3000,vida_util:5,horas_dia:8,consumo_w:120,tarifa_kwh:.85,valor_hora:25,custo_fixo:0,projetos_mes:20,manut_ano:300,insumos_mes:30}, printerFields);
   applyValues(printerProfileDefaults, printerProfileFields);
-  toggleDefaultCustomFil();
   toggleDefaultPlatformFields();
   updateDefaultTaxProfile();
   calc(); document.getElementById('printer_name').focus();
@@ -1326,7 +1272,7 @@ async function saveProduct() {
 async function newProduct() {
   editingProductId = null;
   applyValues(productDefaults, productFields);
-  updateMaterial(); toggleModo(); updatePlatformFields(); document.getElementById('sl_perda').textContent='10%'; switchPage('projeto');
+  updateMaterial(); toggleModo(); updatePlatformFields(); document.getElementById('sl_perda').textContent='15%'; switchPage('projeto');
   await applyPrinterDefaults(true);
 }
 async function editProduct(id) {
@@ -1402,13 +1348,8 @@ function switchPage(name) {
 // ── Material select ───────────────────────────────────────────────────────────
 function updateMaterial() {
   const sel = gs('material');
-  const wrap = document.getElementById('custom_fil_wrap');
-  if(sel === 'custom') {
-    wrap.style.display = '';
-  } else {
-    wrap.style.display = 'none';
-    calc();
-  }
+  if(!sel) return;
+  calc();
 }
 
 // ── Modo precificação ─────────────────────────────────────────────────────────
@@ -1448,46 +1389,18 @@ async function applyPrinterDefaults(force) {
   if(!current) return;
   const defaults = { ...printerProfileDefaults, ...current };
   if(!(force || autoProfileEnabled)) return;
-  document.getElementById('material').value = defaults.default_material || '120';
-  document.getElementById('custom_fil').value = defaults.default_custom_fil ?? 120;
+  document.getElementById('material').value = normalizeMaterial(defaults.default_material);
   document.getElementById('pos_proc').value = defaults.default_pos_proc ?? 0.5;
-  document.getElementById('inclui_mdo').value = String(defaults.default_inclui_mdo ?? 0.1);
-  document.getElementById('taxa_perda').value = defaults.default_taxa_perda ?? 10;
-  document.getElementById('sl_perda').textContent = (defaults.default_taxa_perda ?? 10) + '%';
-  document.getElementById('embalagem').value = defaults.default_embalagem ?? 2.5;
+  document.getElementById('taxa_perda').value = defaults.default_taxa_perda ?? 15;
+  document.getElementById('sl_perda').textContent = (defaults.default_taxa_perda ?? 15) + '%';
+  document.getElementById('embalagem').value = defaults.default_embalagem ?? 1.5;
   document.getElementById('perfil_tributario').value = defaults.default_perfil_tributario || 'cpf';
   document.getElementById('impostos').value = defaults.default_impostos ?? 0;
   document.getElementById('taxa_plat').value = defaults.default_taxa_plat || 0;
   document.getElementById('custom_plat_val').value = defaults.default_custom_plat_val ?? 0;
-  updateMaterial();
   toggleModo();
   updatePlatformFields();
   calc();
-}
-
-function applyQuickPreset(key) {
-  const preset = QUICK_PRESETS[key];
-  if(!preset) return;
-  document.getElementById('tempo_h').value = preset.tempo_h;
-  document.getElementById('tempo_m').value = preset.tempo_m;
-  document.getElementById('filamento_g').value = preset.filamento_g;
-  document.getElementById('pos_proc').value = preset.pos_proc;
-  document.getElementById('inclui_mdo').value = String(preset.inclui_mdo);
-  document.getElementById('taxa_perda').value = preset.taxa_perda;
-  document.getElementById('sl_perda').textContent = preset.taxa_perda + '%';
-  document.getElementById('embalagem').value = preset.embalagem;
-  document.getElementById('qtd_pecas').value = preset.qtd_pecas;
-  if(!document.getElementById('material').value) document.getElementById('material').value = '120';
-  document.getElementById('nome_proj').focus();
-  calc();
-  toast(preset.label + ' aplicado.');
-}
-
-function toggleDefaultCustomFil() {
-  const sel = gs('default_material');
-  const wrap = document.getElementById('default_custom_fil_wrap');
-  if(!wrap) return;
-  wrap.style.display = sel === 'custom' ? '' : 'none';
 }
 
 function updateDefaultTaxProfile() {
@@ -1583,7 +1496,7 @@ function calc() {
   const insumos_mes  = gv('insumos_mes');
   const valor_hora   = gv('valor_hora');
 
-  const preco_fil_kg = gs('material') === 'custom' ? gv('custom_fil') : (parseFloat(gs('material')) || 0);
+  const preco_fil_kg = parseFloat(gs('material')) || 0;
 
   const horas_total = vida_util * 365 * horas_dia;
   const dep_h = horas_total > 0 ? valor_maq / horas_total : 0;
@@ -1603,7 +1516,6 @@ function calc() {
   const tempo_h   = gv('tempo_h') + gv('tempo_m') / 60;
   const fil_g     = gv('filamento_g');
   const pos_h     = gv('pos_proc');
-  const frac_mdo  = gv('inclui_mdo');
   const perda_pct = gv('taxa_perda') / 100;
   const qtd       = Math.max(gv('qtd_pecas'), 1);
 
@@ -1611,7 +1523,7 @@ function calc() {
   const c_ener   = tempo_h * ener_h;
   const c_dep    = tempo_h * dep_h;
   const c_manut  = tempo_h * manut_h;
-  const c_mdo    = (tempo_h * frac_mdo + pos_h) * valor_hora;
+  const c_mdo    = pos_h * valor_hora;
   const c_fixo   = fixo_por_proj;
   const c_emb    = gv('embalagem') + gv('emb_protecao') + gv('emb_etiqueta') + gv('emb_brinde');
   const c_extra  = c_emb + gv('frete') + gv('outros');
