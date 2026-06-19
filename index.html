@@ -800,6 +800,16 @@
         <button class="btn btn-ghost" onclick="switchPage('preco')">Ir para preço</button>
       </div>
     </div>
+    <div class="card">
+      <div class="card-title">Presets rápidos</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:14px;max-width:72ch">Escolha um ponto de partida e depois ajuste só o essencial. Você também pode criar seus próprios hábitos usando as impressoras salvas.</p>
+      <div class="two-col">
+        <button class="btn btn-ghost" onclick="applyQuickPreset('mini')">Peça pequena</button>
+        <button class="btn btn-ghost" onclick="applyQuickPreset('media')">Peça média</button>
+        <button class="btn btn-ghost" onclick="applyQuickPreset('grande')">Peça grande</button>
+        <button class="btn btn-ghost" onclick="applyQuickPreset('lote')">Lote / kit</button>
+      </div>
+    </div>
     <div class="layout-sidebar">
       <div>
         <div class="card" data-advanced="1">
@@ -1175,6 +1185,12 @@ const printerProfileFields = ['default_material','default_custom_fil','default_i
 const printerProfileDefaults = {default_material:'120',default_custom_fil:120,default_inclui_mdo:.1,default_pos_proc:.5,default_taxa_perda:10,default_embalagem:2.5,default_perfil_tributario:'cpf',default_impostos:0,default_taxa_plat:0,default_custom_plat_val:0};
 const productFields = ['nome_proj','material','custom_fil','tempo_h','tempo_m','filamento_g','pos_proc','inclui_mdo','qtd_pecas','taxa_perda','embalagem','emb_protecao','emb_etiqueta','emb_brinde','frete','outros','modo_preco','base_preco','margem','preco_venda_input','perfil_tributario','impostos','taxa_plat','custom_plat_val','shopee_cpf_extra_on','shopee_cpf_extra','shopee_campanha','shopee_devolucao','shopee_cupom','shopee_ads','shopee_frete'];
 const productDefaults = {nome_proj:'',material:'120',custom_fil:120,tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,inclui_mdo:.1,qtd_pecas:1,taxa_perda:10,embalagem:2.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0};
+const QUICK_PRESETS = {
+  mini:   { label:'Peça pequena', tempo_h:1, tempo_m:20, filamento_g:18, pos_proc:0.2, inclui_mdo:0.1, taxa_perda:8, embalagem:1.5, qtd_pecas:1 },
+  media:  { label:'Peça média',    tempo_h:3, tempo_m:0,  filamento_g:45, pos_proc:0.5, inclui_mdo:0.1, taxa_perda:10, embalagem:2.5, qtd_pecas:1 },
+  grande: { label:'Peça grande',   tempo_h:8, tempo_m:30, filamento_g:120, pos_proc:1.0, inclui_mdo:0.2, taxa_perda:15, embalagem:4.0, qtd_pecas:1 },
+  lote:   { label:'Lote / kit',    tempo_h:12, tempo_m:0, filamento_g:300, pos_proc:1.5, inclui_mdo:0.2, taxa_perda:12, embalagem:6.0, qtd_pecas:4 }
+};
 
 function uid() { return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
 function openDB() {
@@ -1238,7 +1254,7 @@ async function initApp() {
   syncAutoProfileToggle();
   syncProjectCompactMode();
   await renderProducts();
-  calc();
+  switchPage('projeto');
 }
 
 async function renderPrinterSelects() {
@@ -1447,6 +1463,24 @@ async function applyPrinterDefaults(force) {
   toggleModo();
   updatePlatformFields();
   calc();
+}
+
+function applyQuickPreset(key) {
+  const preset = QUICK_PRESETS[key];
+  if(!preset) return;
+  document.getElementById('tempo_h').value = preset.tempo_h;
+  document.getElementById('tempo_m').value = preset.tempo_m;
+  document.getElementById('filamento_g').value = preset.filamento_g;
+  document.getElementById('pos_proc').value = preset.pos_proc;
+  document.getElementById('inclui_mdo').value = String(preset.inclui_mdo);
+  document.getElementById('taxa_perda').value = preset.taxa_perda;
+  document.getElementById('sl_perda').textContent = preset.taxa_perda + '%';
+  document.getElementById('embalagem').value = preset.embalagem;
+  document.getElementById('qtd_pecas').value = preset.qtd_pecas;
+  if(!document.getElementById('material').value) document.getElementById('material').value = '120';
+  document.getElementById('nome_proj').focus();
+  calc();
+  toast(preset.label + ' aplicado.');
 }
 
 function toggleDefaultCustomFil() {
