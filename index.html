@@ -732,7 +732,7 @@
   <div class="page" id="page-projeto">
     <div class="page-header">
       <h2>// Custos do projeto</h2>
-      <p>O caminho rápido usa o perfil da impressora. Normalmente você só ajusta tempo e gramas.</p>
+      <p>Escolha a impressora e preencha só tempo e gramas; o perfil completa o resto.</p>
     </div>
     <div class="card">
       <div class="card-title">Entrada rápida</div>
@@ -742,14 +742,14 @@
           <div class="input-wrap"><select id="project_printer" onchange="selectPrinter(this.value)"></select></div>
         </div>
         <div class="field">
-          <label>Aplicação automática do perfil</label>
+          <label>Auto-preencher com o perfil</label>
           <div class="input-wrap">
             <select id="auto_profile" onchange="setAutoProfile(this.value === '1')">
               <option value="1" selected>Ativada</option>
               <option value="0">Desativada</option>
             </select>
           </div>
-          <span class="field-hint">Quando ativada, a impressora preenche os ajustes avançados para você.</span>
+          <span class="field-hint">Quando ligada, a impressora preenche os detalhes automaticamente.</span>
         </div>
         <div class="field">
           <label>Tempo de impressão — horas</label>
@@ -774,8 +774,8 @@
         </div>
       </div>
       <div class="actions" style="margin-top:14px">
-        <button class="btn btn-accent" onclick="applyPrinterDefaults(true)">Reaplicar perfil</button>
-        <button id="toggle_advanced_btn" class="btn btn-ghost" onclick="toggleProjectCompactMode()">Mostrar ajustes avançados</button>
+        <button class="btn btn-accent" onclick="applyPrinterDefaults(true)">Aplicar perfil agora</button>
+        <button id="toggle_advanced_btn" class="btn btn-ghost" onclick="toggleProjectCompactMode()">Editar ajustes avançados</button>
         <button class="btn btn-ghost" onclick="switchPage('preco')">Ir para preço</button>
       </div>
     </div>
@@ -1118,75 +1118,40 @@
   CALC3D — Calculadora de Impressão 3D &nbsp;|&nbsp; <span>feito com ♥</span> para makers brasileiros
 </footer>
 
+<script src="./src/js/app-state.js"></script>
+<script src="./src/js/dom-helpers.js"></script>
+<script src="./src/js/storage/idb.js"></script>
+<script src="./src/js/calc-core.js"></script>
 <script>
+if (!window.CALC3D_CORE) {
+  console.warn('calc-core.js não foi carregado; usando fallback interno.');
+}
 // ── Banco local e estado ─────────────────────────────────────────────────────
-const DB_NAME = 'calc3d-db';
-const DB_VERSION = 3;
+const { DB_NAME, DB_VERSION, printerFields, printerProfileFields, printerProfileDefaults, productFields, productDefaults, autoProfileStorageKey, compactStorageKey } = window.CALC3D_APP;
 let db;
 let activePrinterId = null;
 let editingProductId = null;
-let autoProfileEnabled = localStorage.getItem('calc3d-auto-profile') !== '0';
-let compactProjectMode = localStorage.getItem('calc3d-project-compact') !== '0';
+let autoProfileEnabled = localStorage.getItem(autoProfileStorageKey) !== '0';
+let compactProjectMode = localStorage.getItem(compactStorageKey) !== '0';
+const dbAll = store => window.dbAll(db, store);
+const dbGet = (store, id) => window.dbGet(db, store, id);
+const dbPut = (store, value) => window.dbPut(db, store, value);
+const dbDelete = (store, id) => window.dbDelete(db, store, id);
+const dbClear = store => window.dbClear(db, store);
 
-const printerFields = ['valor_maq','vida_util','horas_dia','consumo_w','tarifa_kwh','valor_hora','custo_fixo','projetos_mes','manut_ano','insumos_mes'];
-const printerProfileFields = ['default_material','default_pos_proc','default_taxa_perda','default_embalagem','default_perfil_tributario','default_impostos','default_taxa_plat','default_custom_plat_val'];
-const printerProfileDefaults = {default_material:'100',default_pos_proc:.5,default_taxa_perda:15,default_embalagem:1.5,default_perfil_tributario:'cpf',default_impostos:0,default_taxa_plat:0,default_custom_plat_val:0};
-const productFields = ['nome_proj','material','tempo_h','tempo_m','filamento_g','pos_proc','qtd_pecas','taxa_perda','embalagem','emb_protecao','emb_etiqueta','emb_brinde','frete','outros','modo_preco','base_preco','margem','preco_venda_input','perfil_tributario','impostos','taxa_plat','custom_plat_val','shopee_cpf_extra_on','shopee_cpf_extra','shopee_campanha','shopee_devolucao','shopee_cupom','shopee_ads','shopee_frete'];
-const productDefaults = {nome_proj:'',material:'100',tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,qtd_pecas:1,taxa_perda:15,embalagem:1.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0};
-
-function uid() { return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = event => {
-      const database = request.result;
-      if(!database.objectStoreNames.contains('printers')) database.createObjectStore('printers', { keyPath:'id' });
-      if(!database.objectStoreNames.contains('products')) database.createObjectStore('products', { keyPath:'id' });
-      if(event.oldVersion > 0 && event.oldVersion < 2) {
-        const store = request.transaction.objectStore('printers');
-        store.openCursor().onsuccess = cursorEvent => {
-          const cursor = cursorEvent.target.result;
-          if(!cursor) return;
-          const printer = cursor.value;
-          delete printer.preco_fil_kg;
-          cursor.update(printer);
-          cursor.continue();
-        };
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-function storeAction(store, mode, action) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, mode);
-    const request = action(tx.objectStore(store));
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-const dbAll = store => storeAction(store, 'readonly', s => s.getAll());
-const dbGet = (store, id) => storeAction(store, 'readonly', s => s.get(id));
-const dbPut = (store, value) => storeAction(store, 'readwrite', s => s.put(value));
-const dbDelete = (store, id) => storeAction(store, 'readwrite', s => s.delete(id));
-function dbClear(store) { return storeAction(store, 'readwrite', s => s.clear()); }
-
-function toast(message) {
-  const el = document.getElementById('toast');
-  el.textContent = message; el.classList.add('show');
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 2400);
-}
-function valuesFrom(ids) { return Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])); }
-function applyValues(values, ids) { ids.forEach(id => { if(values[id] !== undefined) document.getElementById(id).value = values[id]; }); }
-function normalizeMaterial(value) {
-  const allowed = ['100', '80'];
-  const text = String(value ?? '');
-  return allowed.includes(text) ? text : '100';
-}
-function moneyFrom(id) {
-  const text = document.getElementById(id).textContent.replace('R$','').trim().replace(/\./g,'').replace(',','.');
-  return parseFloat(text) || 0;
+function normalizeMaterial(value) { return window.CALC3D_CORE.normalizeMaterial(value); }
+function platformConfigFromUI() {
+  return {
+    taxaPlat: gs('taxa_plat'),
+    customPlatVal: gv('custom_plat_val'),
+    shopeeCpfExtraOn: gv('shopee_cpf_extra_on'),
+    shopeeCpfExtra: gv('shopee_cpf_extra'),
+    shopeeCampanha: gv('shopee_campanha'),
+    shopeeDevolucao: gv('shopee_devolucao'),
+    shopeeCupom: gv('shopee_cupom'),
+    shopeeAds: gv('shopee_ads'),
+    shopeeFrete: gv('shopee_frete'),
+  };
 }
 
 async function initApp() {
@@ -1346,11 +1311,7 @@ function switchPage(name) {
 }
 
 // ── Material select ───────────────────────────────────────────────────────────
-function updateMaterial() {
-  const sel = gs('material');
-  if(!sel) return;
-  calc();
-}
+function updateMaterial() { calc(); }
 
 // ── Modo precificação ─────────────────────────────────────────────────────────
 function toggleModo() {
@@ -1367,7 +1328,7 @@ function syncAutoProfileToggle() {
 function syncProjectCompactMode() {
   document.body.classList.toggle('compact-project', compactProjectMode);
   const btn = document.getElementById('toggle_advanced_btn');
-  if(btn) btn.textContent = compactProjectMode ? 'Mostrar ajustes avançados' : 'Ocultar ajustes avançados';
+  if(btn) btn.textContent = compactProjectMode ? 'Editar ajustes avançados' : 'Ocultar ajustes avançados';
 }
 
 async function setAutoProfile(enabled) {
@@ -1436,117 +1397,83 @@ function updateTaxProfile() {
   calc();
 }
 
-const SHOPEE_TIERS = [
-  { min:0,   max:8,        pct:.50, fixed:0,  label:'R$ 0–7,99 · 50%' },
-  { min:8,   max:80,       pct:.20, fixed:4,  label:'R$ 8–79,99 · 20%' },
-  { min:80,  max:100,      pct:.14, fixed:16, label:'R$ 80–99,99 · 14%' },
-  { min:100, max:200,      pct:.14, fixed:20, label:'R$ 100–199,99 · 14%' },
-  { min:200, max:Infinity, pct:.14, fixed:26, label:'R$ 200+ · 14%' }
-];
-
 function shopeeTier(price) {
-  return SHOPEE_TIERS.find(t => price >= t.min && price < t.max) || SHOPEE_TIERS[0];
+  return window.CALC3D_CORE.shopeeTier(price);
 }
 function platformCharge(price) {
-  const selected = gs('taxa_plat');
-  if(selected === 'shopee_cpf_2026') {
-    const tier = shopeeTier(price);
-    const extraPct = (gv('shopee_campanha') + gv('shopee_devolucao')) / 100;
-    const cpfExtra = gv('shopee_cpf_extra_on') ? gv('shopee_cpf_extra') : 0;
-    const fixed = tier.fixed + cpfExtra + gv('shopee_cupom') + gv('shopee_ads') + gv('shopee_frete');
-    const variable = price * (tier.pct + extraPct);
-    return { total:variable + fixed, variable, fixed, pct:tier.pct + extraPct, tier };
-  }
-  const pct = selected === 'custom_plat' ? gv('custom_plat_val') / 100 : (parseFloat(selected) / 100 || 0);
-  return { total:price * pct, variable:price * pct, fixed:0, pct, tier:null };
+  return window.CALC3D_CORE ? window.CALC3D_CORE.platformCharge(price, platformConfigFromUI()) : { total: 0, variable: 0, fixed: 0, pct: 0, tier: null };
 }
 function priceForMargin(cost, margin, taxPct) {
-  if(gs('taxa_plat') !== 'shopee_cpf_2026') {
-    const divisor = 1 - margin - taxPct - platformCharge(1).pct;
-    return divisor > 0 ? cost / divisor : cost * (1 + margin);
-  }
-  const candidates = [];
-  SHOPEE_TIERS.forEach(tier => {
-    const extraPct = (gv('shopee_campanha') + gv('shopee_devolucao')) / 100;
-    const cpfExtra = gv('shopee_cpf_extra_on') ? gv('shopee_cpf_extra') : 0;
-    const fixed = tier.fixed + cpfExtra + gv('shopee_cupom') + gv('shopee_ads') + gv('shopee_frete');
-    const divisor = 1 - margin - taxPct - tier.pct - extraPct;
-    if(divisor <= 0) return;
-    const candidate = Math.max((cost + fixed) / divisor, tier.min);
-    if(candidate < tier.max) {
-      const fee = platformCharge(candidate).total;
-      const achieved = candidate > 0 ? (candidate - cost - candidate * taxPct - fee) / candidate : -1;
-      if(achieved + .000001 >= margin) candidates.push(candidate);
-    }
-  });
-  return candidates.length ? Math.min(...candidates) : cost * 2;
+  return window.CALC3D_CORE ? window.CALC3D_CORE.priceForMargin(cost, margin, taxPct, platformConfigFromUI()) : cost * (1 + margin);
 }
 
 // ── Cálculo principal ─────────────────────────────────────────────────────────
 function calc() {
-  // === Config máquina ===
-  const valor_maq    = gv('valor_maq');
-  const vida_util    = Math.max(gv('vida_util'), 0.1);
-  const horas_dia    = Math.max(gv('horas_dia'), 0.1);
-  const consumo_w    = gv('consumo_w');
-  const tarifa       = gv('tarifa_kwh');
-  const custo_fixo   = gv('custo_fixo');
-  const projetos_mes = Math.max(gv('projetos_mes'), 1);
-  const manut_ano    = gv('manut_ano');
-  const insumos_mes  = gv('insumos_mes');
-  const valor_hora   = gv('valor_hora');
+  const result = window.CALC3D_CORE ? window.CALC3D_CORE.calculateProjectCosts({
+    printer: {
+      valor_maq: gv('valor_maq'),
+      vida_util: gv('vida_util'),
+      horas_dia: gv('horas_dia'),
+      consumo_w: gv('consumo_w'),
+      tarifa_kwh: gv('tarifa_kwh'),
+      custo_fixo: gv('custo_fixo'),
+      projetos_mes: gv('projetos_mes'),
+      manut_ano: gv('manut_ano'),
+      insumos_mes: gv('insumos_mes'),
+      valor_hora: gv('valor_hora'),
+    },
+    project: {
+      material: gs('material'),
+      tempo_h: gv('tempo_h'),
+      tempo_m: gv('tempo_m'),
+      filamento_g: gv('filamento_g'),
+      pos_proc: gv('pos_proc'),
+      taxa_perda: gv('taxa_perda'),
+      qtd_pecas: gv('qtd_pecas'),
+      embalagem: gv('embalagem'),
+      emb_protecao: gv('emb_protecao'),
+      emb_etiqueta: gv('emb_etiqueta'),
+      emb_brinde: gv('emb_brinde'),
+      frete: gv('frete'),
+      outros: gv('outros'),
+    },
+    pricing: {
+      impostos: gv('impostos'),
+      taxaPlat: gs('taxa_plat'),
+      customPlatVal: gv('custom_plat_val'),
+      shopeeCpfExtraOn: gv('shopee_cpf_extra_on'),
+      shopeeCpfExtra: gv('shopee_cpf_extra'),
+      shopeeCampanha: gv('shopee_campanha'),
+      shopeeDevolucao: gv('shopee_devolucao'),
+      shopeeCupom: gv('shopee_cupom'),
+      shopeeAds: gv('shopee_ads'),
+      shopeeFrete: gv('shopee_frete'),
+    }
+  }) : null;
 
-  const preco_fil_kg = parseFloat(gs('material')) || 0;
+  if(!result) return;
 
-  const horas_total = vida_util * 365 * horas_dia;
-  const dep_h = horas_total > 0 ? valor_maq / horas_total : 0;
-  const ener_h = (consumo_w / 1000) * tarifa;
-  const fil_g_val = preco_fil_kg / 1000;
-  const manut_h = horas_dia > 0 ? (manut_ano + insumos_mes * 12) / (365 * horas_dia) : 0;
-  const custo_total_h = dep_h + ener_h + manut_h;
-  const fixo_por_proj = custo_fixo / projetos_mes;
+  set('cfg_dep_h',   fmt(result.machine.depH) + '/h');
+  set('cfg_ener_h',  fmt(result.machine.enerH) + '/h');
+  set('cfg_manut_h', fmt(result.machine.manutH) + '/h');
+  set('cfg_fixo_proj', fmt(result.machine.fixoPorProj));
+  set('cfg_total_h', fmt(result.machine.custoTotalH) + '/h');
 
-  set('cfg_dep_h',   fmt(dep_h) + '/h');
-  set('cfg_ener_h',  fmt(ener_h) + '/h');
-  set('cfg_manut_h', fmt(manut_h) + '/h');
-  set('cfg_fixo_proj', fmt(fixo_por_proj));
-  set('cfg_total_h', fmt(custo_total_h) + '/h');
-
-  // === Projeto ===
-  const tempo_h   = gv('tempo_h') + gv('tempo_m') / 60;
-  const fil_g     = gv('filamento_g');
-  const pos_h     = gv('pos_proc');
-  const perda_pct = gv('taxa_perda') / 100;
-  const qtd       = Math.max(gv('qtd_pecas'), 1);
-
-  const c_fil    = fil_g * fil_g_val;
-  const c_ener   = tempo_h * ener_h;
-  const c_dep    = tempo_h * dep_h;
-  const c_manut  = tempo_h * manut_h;
-  const c_mdo    = pos_h * valor_hora;
-  const c_fixo   = fixo_por_proj;
-  const c_emb    = gv('embalagem') + gv('emb_protecao') + gv('emb_etiqueta') + gv('emb_brinde');
-  const c_extra  = c_emb + gv('frete') + gv('outros');
-  const subtotal = c_fil + c_ener + c_dep + c_manut + c_mdo + c_fixo + c_extra;
-  const c_perda  = subtotal * perda_pct;
-  const total    = subtotal + c_perda;
-  const por_peca = total / qtd;
-
-  set('r_fil',     fmt(c_fil));
-  set('r_ener',    fmt(c_ener));
-  set('r_dep',     fmt(c_dep));
-  set('r_manut',   fmt(c_manut));
-  set('r_mdo',     fmt(c_mdo));
-  set('r_fixo',    fmt(c_fixo));
-  set('r_perda',   fmt(c_perda));
-  set('r_extra',   fmt(c_extra));
-  set('r_total',   fmt(total));
-  set('r_por_peca', fmt(por_peca));
+  set('r_fil',     fmt(result.project.cFil));
+  set('r_ener',    fmt(result.project.cEner));
+  set('r_dep',     fmt(result.project.cDep));
+  set('r_manut',   fmt(result.project.cManut));
+  set('r_mdo',     fmt(result.project.cMdo));
+  set('r_fixo',    fmt(result.project.cFixo));
+  set('r_perda',   fmt(result.project.cPerda));
+  set('r_extra',   fmt(result.project.cExtra));
+  set('r_total',   fmt(result.project.total));
+  set('r_por_peca', fmt(result.project.porPeca));
 
   // === Precificação ===
   const modo = gs('modo_preco');
-  const custo_venda = gs('base_preco') === 'peca' ? por_peca : total;
-  const imp_pct  = gv('impostos') / 100;
+  const custo_venda = gs('base_preco') === 'peca' ? result.project.porPeca : result.project.total;
+  const imp_pct  = result.pricing.impPct;
   let venda = 0, lucro = 0;
 
   if(modo === 'margem') {
