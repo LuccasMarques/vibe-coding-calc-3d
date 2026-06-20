@@ -7,10 +7,13 @@ Calculadora PWA de custos e precificação para impressão 3D.
 - Cadastro de múltiplas impressoras com custos independentes
 - Fluxo rápido de precificação usando o perfil da impressora
 - Catálogo local de produtos com edição e duplicação
+- Controle de estoque local por produto, com pronta entrega, reservas e mínimo
 - Precificação Shopee CPF 2026 e CNPJ 2026 por faixa, tarifa fixa e adicionais configuráveis
 - Composição detalhada dos custos de embalagem
 - Backup e restauração em JSON
 - Funcionamento offline por service worker
+- Versão pública rápida com cálculo simples e laterais reservadas para anúncios
+- Modo avançado com catálogo, estoque e precificação detalhada
 
 ## Dados atuais do projeto
 
@@ -33,3 +36,13 @@ Depois acesse `http://localhost:8000`.
 ## Contexto do projeto
 
 O contexto vivo fica em [CONTEXT.md](./CONTEXT.md).
+
+## Login protegido
+
+Veja [docs/auth-architecture.md](./docs/auth-architecture.md) para a arquitetura do login próprio e sessão no servidor.
+
+Para habilitar:
+
+- preencha `authApiBaseUrl` em `src/js/app-state.js`;
+- configure o backend em `auth-server/.env` com `FRONTEND_ORIGIN`, `AUTH_USERNAME`, `AUTH_PASSWORD_HASH` e `SESSION_SECRET`;
+- publique o frontend no GitHub Pages e o backend em uma origem HTTPS separada.

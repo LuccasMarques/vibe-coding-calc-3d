@@ -6,6 +6,7 @@
         const database = request.result;
         if(!database.objectStoreNames.contains('printers')) database.createObjectStore('printers', { keyPath:'id' });
         if(!database.objectStoreNames.contains('products')) database.createObjectStore('products', { keyPath:'id' });
+        if(!database.objectStoreNames.contains('inventory')) database.createObjectStore('inventory', { keyPath:'productId' });
         if(event.oldVersion > 0 && event.oldVersion < 2) {
           const store = request.transaction.objectStore('printers');
           store.openCursor().onsuccess = cursorEvent => {

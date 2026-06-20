@@ -56,6 +56,139 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  body.auth-locked header,
+  body.auth-locked main,
+  body.auth-locked footer,
+  body.auth-locked .app-shell {
+    display: none;
+  }
+  .auth-screen {
+    min-height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  body.auth-locked .auth-screen {
+    display: flex;
+  }
+  .auth-card {
+    width: min(100%, 520px);
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(215,224,232,0.9);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+  }
+  .auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(15,118,110,0.08);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .auth-card h1 {
+    font-family: var(--mono);
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+  .auth-card p {
+    color: var(--text2);
+    margin-bottom: 1rem;
+  }
+  .auth-status {
+    margin-top: 1rem;
+    font-size: 13px;
+    color: var(--text3);
+  }
+  .auth-session {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 16px;
+    background: rgba(15,118,110,0.06);
+    border: 1px solid rgba(15,118,110,0.14);
+    color: var(--text2);
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .auth-session.visible {
+    display: flex;
+  }
+  .auth-session strong {
+    display: block;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .auth-login {
+    margin-top: 1rem;
+  }
+  .auth-form {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .auth-form .field {
+    gap: 4px;
+  }
+  .auth-form .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .app-shell {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 220px;
+    gap: 1rem;
+    align-items: start;
+    padding: 0 1rem;
+  }
+  .app-main {
+    min-width: 0;
+  }
+  .app-ads {
+    position: sticky;
+    top: 84px;
+    display: grid;
+    gap: 1rem;
+  }
+  .ad-slot {
+    min-height: 250px;
+    border-radius: 20px;
+    border: 1px dashed rgba(37,99,235,0.22);
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(248,250,252,0.95));
+    box-shadow: var(--shadow-soft);
+    padding: 1rem;
+    color: var(--text3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .ad-slot strong {
+    display:block;
+    font-family: var(--mono);
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .ad-slot span {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  @media(max-width: 1240px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .app-ads { display: none; }
+  }
 
   /* HEADER */
   header {
@@ -394,6 +527,8 @@
     letter-spacing: 0.5px;
   }
   .badge-accent { background: rgba(15,118,110,0.10); color: var(--accent); border: 1px solid rgba(15,118,110,0.18); }
+  .badge.warn { background: rgba(217,119,6,0.10); color: var(--warn); border: 1px solid rgba(217,119,6,0.20); }
+  .badge.danger { background: rgba(220,38,38,0.08); color: var(--danger); border: 1px solid rgba(220,38,38,0.18); }
 
   /* DIVIDER */
   .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
@@ -430,6 +565,72 @@
   .catalog-values { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
   .catalog-values div { background:var(--surface2); border:1px solid rgba(215,224,232,0.7); border-radius:10px; padding:8px; font-size:11px; color:var(--text3); }
   .catalog-values strong { display:block; color:var(--accent); font-family:var(--mono); font-size:14px; }
+  .stock-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  @media(max-width: 700px) { .stock-summary { grid-template-columns: repeat(2, 1fr); } }
+  .stock-stat {
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.97));
+    border: 1px solid rgba(215,224,232,0.9);
+    border-radius: var(--radius);
+    padding: 12px;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+  }
+  .stock-stat .label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .stock-stat .value { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--text); }
+  .stock-stat .value.accent { color: var(--accent); }
+  .stock-stat .value.warn { color: var(--warn); }
+  .stock-stat .value.danger { color: var(--danger); }
+  .stock-card .stock-top {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    margin-bottom:10px;
+  }
+  .stock-card .stock-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .stock-card .stock-status {
+    display:inline-flex;
+    margin-top:6px;
+  }
+  .stock-card .stock-meta {
+    font-size:12px;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+  .stock-card .stock-values {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stock-card .stock-values div {
+    background: var(--surface2);
+    border: 1px solid rgba(215,224,232,0.7);
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .stock-card .stock-values strong {
+    display:block;
+    color:var(--accent);
+    font-family:var(--mono);
+    font-size:14px;
+  }
+  .stock-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+    gap:1rem;
+  }
   .empty-state { border:1px dashed var(--border2); border-radius:var(--radius-lg); padding:2rem; text-align:center; color:var(--text3); background:rgba(255,255,255,0.65); }
   .toast { position:fixed; right:20px; bottom:20px; z-index:500; background:rgba(15,23,42,0.96); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:11px 16px; border-radius:var(--radius); box-shadow:0 18px 40px rgba(15,23,42,.25); opacity:0; transform:translateY(8px); pointer-events:none; transition:.2s; }
   .toast.show { opacity:1; transform:none; }
@@ -482,7 +683,26 @@
   }
 </style>
 </head>
-<body>
+<body class="public-mode">
+<div class="app-shell">
+  <aside class="app-ads">
+    <div class="ad-slot">
+      <div>
+        <strong>Espaço de anúncio</strong>
+        <span>Reserva lateral para monetização. Aqui você pode colocar banner, produto afiliado ou promoção da sua loja.</span>
+      </div>
+      <span>Formato sugerido: 160x600 ou 300x250.</span>
+    </div>
+    <div class="ad-slot">
+      <div>
+        <strong>Publicidade fixa</strong>
+        <span>Outro bloco lateral para campanhas sazonais, cupom ou destaque de material/embalagem.</span>
+      </div>
+      <span>Ideal para desktop.</span>
+    </div>
+  </aside>
+
+  <div class="app-main">
 
 <header>
   <div class="header-inner">
@@ -491,18 +711,107 @@
       <span>CALC3D</span>
     </div>
     <nav class="nav-tabs">
-      <button class="nav-tab active" data-page="maquina" onclick="switchPage('maquina')">⚙ Impressoras</button>
+      <button class="nav-tab active" data-page="rapido" onclick="switchPage('rapido')">⚡ Rápido</button>
+      <button class="nav-tab" data-page="maquina" onclick="switchPage('maquina')">⚙ Avançado</button>
       <button class="nav-tab" data-page="projeto" onclick="switchPage('projeto')">◈ Calculadora</button>
       <button class="nav-tab" data-page="preco" onclick="switchPage('preco')">R$ Precificação</button>
       <button class="nav-tab" data-page="produtos" onclick="switchPage('produtos')">▦ Produtos</button>
+      <button class="nav-tab" data-page="estoque" onclick="switchPage('estoque')">▤ Estoque</button>
     </nav>
   </div>
 </header>
 
 <main>
 
+  <!-- ======================== PÁGINA: RÁPIDO ======================== -->
+  <div class="page active" id="page-rapido">
+    <div class="page-header">
+      <h2>// Calculadora rápida</h2>
+      <p>Versão pública simples para estimar preço com peso, tempo e margem. O restante fica no modo avançado.</p>
+    </div>
+
+    <div class="layout-sidebar">
+      <div>
+        <div class="card">
+          <div class="card-title">Cálculo básico</div>
+          <div class="three-col">
+            <div class="field">
+              <label>Peso da peça</label>
+              <div class="input-wrap">
+                <input type="number" id="quick_weight_g" value="100" min="0" step="1" oninput="calcQuick()">
+                <span class="input-unit">g</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Tempo de impressão</label>
+              <div class="input-wrap">
+                <input type="number" id="quick_time_h" value="2" min="0" step="0.1" oninput="calcQuick()">
+                <span class="input-unit">h</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Lucro desejado</label>
+              <div class="input-wrap">
+                <input type="number" id="quick_margin_pct" value="50" min="0" step="1" oninput="calcQuick()">
+                <span class="input-unit">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-info" style="margin-top:12px">
+            ℹ Este modo usa taxas padrão de referência para material e hora. O objetivo aqui é ser rápido e direto.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Resumo do cálculo</div>
+          <div class="metric-row">
+            <span class="metric-name">Custo do material</span>
+            <span class="metric-val" id="quick_material_cost">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Custo do tempo</span>
+            <span class="metric-val" id="quick_time_cost">R$ 0,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Custo base</span>
+            <span class="metric-val accent" id="quick_base_cost">R$ 0,00</span>
+          </div>
+          <div class="metric-total">
+            <span class="label">Preço final</span>
+            <span class="value" id="quick_final_price">R$ 0,00</span>
+          </div>
+          <div style="margin-top:12px" class="actions">
+            <button class="btn btn-accent" onclick="switchPage('projeto')">Abrir modo avançado</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="results-panel">
+          <div class="results-header">Amostra monetizável</div>
+          <div class="metric-row">
+            <span class="metric-name">Taxa padrão por grama</span>
+            <span class="metric-val">R$ 0,10</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Taxa padrão por hora</span>
+            <span class="metric-val">R$ 25,00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-name">Margem aplicada</span>
+            <span class="metric-val" id="quick_margin_display">50%</span>
+          </div>
+          <div class="metric-total">
+            <span class="label">Preço estimado</span>
+            <span class="value" id="quick_final_price_side">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ======================== PÁGINA: MÁQUINA ======================== -->
-  <div class="page active" id="page-maquina">
+  <div class="page" id="page-maquina">
     <div class="page-header">
       <h2>// Impressoras</h2>
       <p>Cadastre cada máquina para aplicar seus custos reais aos produtos.</p>
@@ -1112,6 +1421,85 @@
     <div id="products_grid" class="catalog-grid"></div>
   </div>
 
+  <!-- ======================== PÁGINA: ESTOQUE ======================== -->
+  <div class="page" id="page-estoque">
+    <div class="page-header">
+      <h2>// Controle de estoque</h2>
+      <p>Veja quais produtos estão prontos para entrega e ajuste as quantidades sem sair do fluxo da precificadora.</p>
+    </div>
+
+    <div class="stock-summary" id="stock_summary"></div>
+
+    <div class="card">
+      <div class="card-title">Cadastro rápido do estoque</div>
+      <div class="three-col">
+        <div class="field">
+          <label>Produto</label>
+          <div class="input-wrap">
+            <select id="stock_product" onchange="loadInventoryForm(this.value)"></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Quantidade em mãos</label>
+          <div class="input-wrap">
+            <input type="number" id="stock_quantity" min="0" step="1" value="0">
+            <span class="input-unit">un</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Reservados</label>
+          <div class="input-wrap">
+            <input type="number" id="stock_reserved" min="0" step="1" value="0">
+            <span class="input-unit">un</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Estoque mínimo</label>
+          <div class="input-wrap">
+            <input type="number" id="stock_minimum" min="0" step="1" value="0">
+            <span class="input-unit">un</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Localização</label>
+          <div class="input-wrap">
+            <input type="text" id="stock_location" placeholder="Ex: Caixa A3">
+          </div>
+        </div>
+        <div class="field">
+          <label>Observações</label>
+          <div class="input-wrap">
+            <input type="text" id="stock_notes" placeholder="Etiqueta, embalagem, cor...">
+          </div>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn btn-accent" onclick="saveInventoryRecord()">Salvar estoque</button>
+        <button class="btn btn-ghost" onclick="setInventoryMovement('entry')">+ Entrada</button>
+        <button class="btn btn-ghost" onclick="setInventoryMovement('sale')">- Saída</button>
+        <button class="btn btn-ghost" onclick="setInventoryMovement('adjustment')">Ajustar</button>
+        <button class="btn btn-danger" onclick="clearInventoryForm()">Limpar</button>
+      </div>
+      <p style="color:var(--text3);font-size:12px;margin-top:10px">A reserva ajuda a separar pedidos e a disponibilidade mostra o que ainda pode ser vendido como pronta entrega.</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="input-wrap"><input id="stock_search" type="search" placeholder="Buscar no estoque..." oninput="renderInventory()" style="padding-right:12px"></div>
+      <div class="actions">
+        <div class="input-wrap" style="min-width:220px">
+          <select id="stock_filter" onchange="renderInventory()">
+            <option value="all">Todos os produtos</option>
+            <option value="ready">Pronta entrega</option>
+            <option value="low">Estoque baixo</option>
+            <option value="empty">Sem estoque</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="stock_grid" class="stock-grid"></div>
+  </div>
+
 </main>
 
 <div id="toast" class="toast"></div>
@@ -1120,19 +1508,41 @@
   CALC3D — Calculadora de Impressão 3D &nbsp;|&nbsp; <span>feito com ♥</span> para makers brasileiros
 </footer>
 
+  </div>
+
+  <aside class="app-ads">
+    <div class="ad-slot">
+      <div>
+        <strong>Espaço de anúncio</strong>
+        <span>Reserva lateral para monetização. Aqui você pode colocar banner, produto afiliado ou promoção da sua loja.</span>
+      </div>
+      <span>Formato sugerido: 160x600 ou 300x250.</span>
+    </div>
+    <div class="ad-slot">
+      <div>
+        <strong>Publicidade fixa</strong>
+        <span>Outro bloco lateral para campanhas sazonais, cupom ou destaque de material/embalagem.</span>
+      </div>
+      <span>Ideal para desktop.</span>
+    </div>
+  </aside>
+</div>
+
 <script src="./src/js/app-state.js"></script>
 <script src="./src/js/dom-helpers.js"></script>
 <script src="./src/js/storage/idb.js"></script>
 <script src="./src/js/calc-core.js"></script>
+<script src="./src/js/inventory-core.js"></script>
 <script>
 if (!window.CALC3D_CORE) {
   console.warn('calc-core.js não foi carregado; usando fallback interno.');
 }
 // ── Banco local e estado ─────────────────────────────────────────────────────
-const { DB_NAME, DB_VERSION, printerFields, printerProfileFields, printerProfileDefaults, productFields, productDefaults, autoProfileStorageKey, compactStorageKey } = window.CALC3D_APP;
+const { DB_NAME, DB_VERSION, printerFields, printerProfileFields, printerProfileDefaults, productFields, productDefaults, autoProfileStorageKey, compactStorageKey, authApiBaseUrl, authLoginPath } = window.CALC3D_APP;
 let db;
 let activePrinterId = null;
 let editingProductId = null;
+let editingInventoryProductId = null;
 let autoProfileEnabled = localStorage.getItem(autoProfileStorageKey) !== '0';
 let compactProjectMode = localStorage.getItem(compactStorageKey) !== '0';
 const dbAll = store => window.dbAll(db, store);
@@ -1140,6 +1550,12 @@ const dbGet = (store, id) => window.dbGet(db, store, id);
 const dbPut = (store, value) => window.dbPut(db, store, value);
 const dbDelete = (store, id) => window.dbDelete(db, store, id);
 const dbClear = store => window.dbClear(db, store);
+const inventoryApi = window.CALC3D_INVENTORY || {
+  summarizeStock: value => value || { productId: '', quantityOnHand: 0, reservedQuantity: 0, minimumStock: 0, location: '', notes: '', updatedAt: '', availableQuantity: 0, isInStock: false, isReadyForDelivery: false, isLowStock: false, hasReservationOverflow: false },
+  normalizeStockRecord: value => value || { productId: '', quantityOnHand: 0, reservedQuantity: 0, minimumStock: 0, location: '', notes: '', updatedAt: '' },
+  stockBadgeLabel: () => 'Sem estoque',
+  applyStockMovement: value => value || { productId: '', quantityOnHand: 0, reservedQuantity: 0, minimumStock: 0, location: '', notes: '', updatedAt: '' },
+};
 
 function normalizeMaterial(value) { return window.CALC3D_CORE.normalizeMaterial(value); }
 function platformConfigFromUI() {
@@ -1156,6 +1572,95 @@ function platformConfigFromUI() {
   };
 }
 
+function authUrl(path) {
+  if(!authApiBaseUrl) return '';
+  return new URL(path, authApiBaseUrl).toString();
+}
+
+function setAuthStatus(message) {
+  const el = document.getElementById('auth-status');
+  if(el) el.textContent = message;
+}
+
+function lockApp() {
+  document.body.classList.add('auth-locked');
+}
+
+function unlockApp() {
+  document.body.classList.remove('auth-locked');
+}
+
+function renderAuthSession(user) {
+  const wrap = document.getElementById('auth-session');
+  const name = document.getElementById('auth-user-name');
+  const email = document.getElementById('auth-user-email');
+  if(!wrap || !name || !email) return;
+  if(user) {
+    name.textContent = user.name || user.id || 'Conta autorizada';
+    email.textContent = user.email || '';
+    wrap.classList.add('visible');
+  } else {
+    name.textContent = '—';
+    email.textContent = '';
+    wrap.classList.remove('visible');
+  }
+}
+
+async function checkSession() {
+  if(!authApiBaseUrl) return false;
+  try {
+    const response = await fetch(authUrl('/api/session'), { credentials:'include' });
+    if(!response.ok) return false;
+    const data = await response.json();
+    return data.authenticated ? data.user || {} : null;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+async function loginWithCredentials() {
+  if(!authApiBaseUrl) return setAuthStatus('Configure o backend de autenticação antes de entrar.');
+  const username = document.getElementById('auth_username').value.trim();
+  const password = document.getElementById('auth_password').value;
+  if(!username || !password) return setAuthStatus('Informe usuário e senha.');
+  setAuthStatus('Validando acesso...');
+  try {
+    const res = await fetch(authUrl(authLoginPath), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    if(!res.ok) throw new Error(await res.text());
+    document.getElementById('auth_password').value = '';
+    await bootstrapAuth();
+  } catch (error) {
+    console.error(error);
+    setAuthStatus('Não foi possível validar seu login.');
+  }
+}
+
+async function bootstrapAuth() {
+  unlockApp();
+  await initApp();
+}
+
+async function logoutSession() {
+  if(!authApiBaseUrl) return;
+  try {
+    await fetch(authUrl('/api/logout'), {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setAuthStatus('Sessão encerrada. Entre novamente para continuar.');
+    await bootstrapAuth();
+  }
+}
+
 async function initApp() {
   db = await openDB();
   let printers = await dbAll('printers');
@@ -1168,7 +1673,10 @@ async function initApp() {
   syncAutoProfileToggle();
   syncProjectCompactMode();
   await renderProducts();
-  switchPage('projeto');
+  await renderInventoryProductSelect();
+  await renderInventory();
+  switchPage('rapido');
+  calcQuick();
 }
 
 async function renderPrinterSelects() {
@@ -1178,6 +1686,21 @@ async function renderPrinterSelects() {
     const el = document.getElementById(id); el.innerHTML = options;
     if(activePrinterId) el.value = activePrinterId;
   });
+}
+async function renderInventoryProductSelect() {
+  const select = document.getElementById('stock_product');
+  if(!select) return;
+  const products = await dbAll('products');
+  const options = products
+    .sort((a, b) => (a.nome_proj || '').localeCompare(b.nome_proj || ''))
+    .map(product => `<option value="${product.id}">${escapeHtml(product.nome_proj || 'Produto sem nome')}</option>`)
+    .join('');
+  select.innerHTML = options || '<option value="">Nenhum produto salvo</option>';
+  if(editingInventoryProductId && products.some(product => product.id === editingInventoryProductId)) {
+    select.value = editingInventoryProductId;
+  } else if(!select.value && products.length) {
+    select.value = products[0].id;
+  }
 }
 async function selectPrinter(id) {
   if(!id) return;
@@ -1234,7 +1757,9 @@ async function saveProduct() {
   const old = editingProductId ? await dbGet('products', editingProductId) : null;
   const product = { ...(old || {}), id:editingProductId || uid(), printerId:activePrinterId, ...valuesFrom(productFields), cost:moneyFrom('r_total'), unitCost:moneyFrom('r_por_peca'), salePrice:moneyFrom('p_venda'), updatedAt:new Date().toISOString() };
   await dbPut('products', product); editingProductId = product.id;
-  await renderProducts(); toast(old ? 'Produto atualizado.' : 'Produto salvo.');
+  await renderProducts();
+  await renderInventory();
+  toast(old ? 'Produto atualizado.' : 'Produto salvo.');
 }
 async function newProduct() {
   editingProductId = null;
@@ -1255,21 +1780,190 @@ async function duplicateProduct(id) {
 }
 async function deleteProduct(id) {
   if(!confirm('Excluir este produto?')) return;
-  await dbDelete('products', id); if(editingProductId === id) editingProductId = null; await renderProducts(); toast('Produto excluído.');
+  await dbDelete('products', id);
+  await dbDelete('inventory', id);
+  if(editingProductId === id) editingProductId = null;
+  if(editingInventoryProductId === id) editingInventoryProductId = null;
+  await renderProducts();
+  await renderInventory();
+  toast('Produto excluído.');
+}
+async function loadInventoryForm(productId) {
+  if(!productId) return;
+  editingInventoryProductId = productId;
+  const record = inventoryApi.normalizeStockRecord(await dbGet('inventory', productId) || { productId });
+  document.getElementById('stock_product').value = productId;
+  document.getElementById('stock_quantity').value = record.quantityOnHand;
+  document.getElementById('stock_reserved').value = record.reservedQuantity;
+  document.getElementById('stock_minimum').value = record.minimumStock;
+  document.getElementById('stock_location').value = record.location;
+  document.getElementById('stock_notes').value = record.notes;
+  switchPage('estoque');
+}
+function clearInventoryForm() {
+  editingInventoryProductId = null;
+  const first = document.getElementById('stock_product').value;
+  document.getElementById('stock_quantity').value = 0;
+  document.getElementById('stock_reserved').value = 0;
+  document.getElementById('stock_minimum').value = 0;
+  document.getElementById('stock_location').value = '';
+  document.getElementById('stock_notes').value = '';
+  if(first) document.getElementById('stock_product').value = first;
+}
+async function saveInventoryRecord() {
+  const productId = gs('stock_product');
+  if(!productId) return toast('Cadastre um produto antes de controlar o estoque.');
+  const record = inventoryApi.normalizeStockRecord({
+    productId,
+    quantityOnHand: gv('stock_quantity'),
+    reservedQuantity: gv('stock_reserved'),
+    minimumStock: gv('stock_minimum'),
+    location: gs('stock_location'),
+    notes: gs('stock_notes'),
+  });
+  await dbPut('inventory', { ...record, updatedAt: new Date().toISOString() });
+  editingInventoryProductId = productId;
+  await renderProducts();
+  await renderInventory();
+  toast('Estoque salvo.');
+}
+async function setInventoryMovement(type) {
+  const productId = gs('stock_product');
+  if(!productId) return toast('Selecione um produto.');
+  const record = await dbGet('inventory', productId) || { productId };
+  const labels = { entry: 'entrada', sale: 'saída', adjustment: 'ajuste' };
+  const current = inventoryApi.summarizeStock(record);
+  const promptValue = type === 'adjustment'
+    ? prompt(`Novo total em estoque para ${labels[type]}:`, String(current.quantityOnHand || 0))
+    : prompt(`Quantidade para ${labels[type]} de ${document.getElementById('stock_product').selectedOptions[0]?.text || 'produto'}:`, '1');
+  if(promptValue === null) return;
+  const amount = Number(promptValue);
+  if(!Number.isFinite(amount) || amount < 0) return toast('Informe um valor válido.');
+  const next = inventoryApi.applyStockMovement(record, type === 'adjustment'
+    ? { type, quantity: amount }
+    : { type, amount });
+  await dbPut('inventory', next);
+  await loadInventoryForm(productId);
+  await renderProducts();
+  await renderInventory();
+  toast('Movimento aplicado.');
+}
+async function renderInventory() {
+  if(!db) return;
+  const grid = document.getElementById('stock_grid');
+  const summary = document.getElementById('stock_summary');
+  const query = (document.getElementById('stock_search')?.value || '').toLowerCase();
+  const filter = document.getElementById('stock_filter')?.value || 'all';
+  const [products, stockRows] = await Promise.all([dbAll('products'), dbAll('inventory')]);
+  await renderInventoryProductSelect();
+
+  const stockMap = new Map(stockRows.map(row => [row.productId, inventoryApi.summarizeStock(row)]));
+  const rows = products
+    .map(product => {
+      const stock = stockMap.get(product.id) || inventoryApi.summarizeStock({ productId: product.id });
+      const matchesQuery = (product.nome_proj || '').toLowerCase().includes(query) ||
+        (stock.location || '').toLowerCase().includes(query) ||
+        (stock.notes || '').toLowerCase().includes(query);
+      const matchesFilter = filter === 'all' ||
+        (filter === 'ready' && stock.isReadyForDelivery) ||
+        (filter === 'low' && stock.isLowStock) ||
+        (filter === 'empty' && stock.quantityOnHand <= 0);
+      return { product, stock, matchesQuery, matchesFilter };
+    })
+    .filter(row => row.matchesQuery && row.matchesFilter)
+    .sort((a, b) => (a.product.nome_proj || '').localeCompare(b.product.nome_proj || ''));
+
+  const totals = products.reduce((acc, product) => {
+    const stock = stockMap.get(product.id) || inventoryApi.summarizeStock({ productId: product.id });
+    acc.tracked += stock.quantityOnHand > 0 || stock.reservedQuantity > 0 || stock.minimumStock > 0 ? 1 : 0;
+    acc.ready += stock.isReadyForDelivery ? 1 : 0;
+    acc.low += stock.isLowStock ? 1 : 0;
+    acc.empty += stock.quantityOnHand <= 0 ? 1 : 0;
+    return acc;
+  }, { tracked: 0, ready: 0, low: 0, empty: 0 });
+
+  if(summary) {
+    summary.innerHTML = [
+      { label: 'Produtos cadastrados', value: products.length, tone: 'accent' },
+      { label: 'Em pronta entrega', value: totals.ready, tone: 'accent' },
+      { label: 'Estoque baixo', value: totals.low, tone: 'warn' },
+      { label: 'Sem estoque', value: totals.empty, tone: 'danger' },
+    ].map(item => `<div class="stock-stat"><div class="label">${escapeHtml(item.label)}</div><div class="value ${item.tone || ''}">${item.value}</div></div>`).join('');
+  }
+
+  if(!rows.length) {
+    grid.innerHTML = '<div class="empty-state">Nenhum item encontrado no estoque.<br>Cadastre um produto e salve as quantidades para começar.</div>';
+    return;
+  }
+
+  grid.innerHTML = rows.map(({ product, stock }) => {
+    const badge = inventoryApi.stockBadgeLabel(stock);
+    const statusClass = stock.quantityOnHand <= 0 ? 'badge danger' : stock.isLowStock ? 'badge warn' : 'badge badge-accent';
+    return `<article class="catalog-card stock-card">
+      <div class="stock-top">
+        <div>
+          <div class="stock-name">${escapeHtml(product.nome_proj || 'Produto sem nome')}</div>
+          <div class="stock-meta">${escapeHtml(stock.location || 'Sem localização')} · ${escapeHtml(stock.notes || 'Sem observações')}</div>
+          <span class="${statusClass} stock-status">${escapeHtml(badge)}</span>
+        </div>
+        <div style="text-align:right;font-family:var(--mono);font-size:12px;color:var(--text3)">
+          <div>Atualizado</div>
+          <strong style="display:block;color:var(--text)">${stock.updatedAt ? new Date(stock.updatedAt).toLocaleString('pt-BR') : '—'}</strong>
+        </div>
+      </div>
+      <div class="stock-values">
+        <div>Em mãos<strong>${stock.quantityOnHand}</strong></div>
+        <div>Reservados<strong>${stock.reservedQuantity}</strong></div>
+        <div>Disponível<strong>${stock.availableQuantity}</strong></div>
+      </div>
+      <div class="stock-values">
+        <div>Mínimo<strong>${stock.minimumStock}</strong></div>
+        <div>Pronta entrega<strong>${stock.isReadyForDelivery ? 'Sim' : 'Não'}</strong></div>
+        <div>Produto<strong>${escapeHtml(product.id.slice(0, 6))}</strong></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-accent btn-small" onclick="loadInventoryForm('${product.id}')">Editar estoque</button>
+        <button class="btn btn-ghost btn-small" onclick="editProduct('${product.id}')">Abrir produto</button>
+      </div>
+    </article>`;
+  }).join('');
 }
 async function renderProducts() {
   if(!db) return;
   const grid = document.getElementById('products_grid');
   const query = (document.getElementById('product_search').value || '').toLowerCase();
-  const [products, printers] = await Promise.all([dbAll('products'), dbAll('printers')]);
+  const [products, printers, inventory] = await Promise.all([dbAll('products'), dbAll('printers'), dbAll('inventory')]);
   const printerNames = Object.fromEntries(printers.map(p => [p.id,p.name]));
+  const stockNames = new Map(inventory.map(record => [record.productId, inventoryApi.summarizeStock(record)]));
   const filtered = products.filter(p => (p.nome_proj || '').toLowerCase().includes(query)).sort((a,b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
   if(!filtered.length) { grid.innerHTML='<div class="empty-state">Nenhum produto encontrado.<br>Crie um produto pela calculadora.</div>'; return; }
-  grid.innerHTML = filtered.map(p => `<article class="catalog-card"><h3>${escapeHtml(p.nome_proj)}</h3><div class="catalog-meta">${escapeHtml(printerNames[p.printerId] || 'Impressora não encontrada')} · ${escapeHtml(p.material === 'custom' ? 'Material personalizado' : 'R$ '+p.material+'/kg')}</div><div class="catalog-values"><div>Custo unitário<strong>${fmt(Number(p.unitCost)||0)}</strong></div><div>Preço de venda<strong>${fmt(Number(p.salePrice)||0)}</strong></div></div><div class="actions"><button class="btn btn-accent btn-small" onclick="editProduct('${p.id}')">Editar</button><button class="btn btn-ghost btn-small" onclick="duplicateProduct('${p.id}')">Duplicar</button><button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">Excluir</button></div></article>`).join('');
+  grid.innerHTML = filtered.map(p => {
+    const stock = stockNames.get(p.id) || inventoryApi.summarizeStock({ productId: p.id });
+    const badge = inventoryApi.stockBadgeLabel(stock);
+    const badgeClass = stock.quantityOnHand <= 0 ? 'badge danger' : stock.isLowStock ? 'badge warn' : 'badge badge-accent';
+    return `<article class="catalog-card">
+      <h3>${escapeHtml(p.nome_proj)}</h3>
+      <div class="catalog-meta">${escapeHtml(printerNames[p.printerId] || 'Impressora não encontrada')} · ${escapeHtml(p.material === 'custom' ? 'Material personalizado' : 'R$ '+p.material+'/kg')}</div>
+      <div class="catalog-values">
+        <div>Custo unitário<strong>${fmt(Number(p.unitCost)||0)}</strong></div>
+        <div>Preço de venda<strong>${fmt(Number(p.salePrice)||0)}</strong></div>
+      </div>
+      <div class="catalog-meta" style="margin-bottom:10px">
+        <span class="${badgeClass}">${escapeHtml(badge)}</span>
+        <span style="margin-left:8px">Disponível: <strong style="color:var(--accent);font-family:var(--mono)">${stock.availableQuantity}</strong></span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-accent btn-small" onclick="editProduct('${p.id}')">Editar</button>
+        <button class="btn btn-ghost btn-small" onclick="duplicateProduct('${p.id}')">Duplicar</button>
+        <button class="btn btn-ghost btn-small" onclick="loadInventoryForm('${p.id}')">Estoque</button>
+        <button class="btn btn-danger btn-small" onclick="deleteProduct('${p.id}')">Excluir</button>
+      </div>
+    </article>`;
+  }).join('');
 }
 
 async function exportBackup() {
-  const data = { app:'CALC3D', version:3, exportedAt:new Date().toISOString(), printers:await dbAll('printers'), products:await dbAll('products') };
+  const data = { app:'CALC3D', version:4, exportedAt:new Date().toISOString(), printers:await dbAll('printers'), products:await dbAll('products'), inventory:await dbAll('inventory') };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`calc3d-backup-${new Date().toISOString().slice(0,10)}.json`; link.click(); URL.revokeObjectURL(link.href); toast('Backup exportado.');
 }
@@ -1280,10 +1974,12 @@ async function importBackup(file) {
     if(data.app !== 'CALC3D' || !Array.isArray(data.printers) || !data.printers.length || !Array.isArray(data.products)) throw new Error('Formato inválido');
     if(!confirm('A importação substituirá os dados locais. Continuar?')) return;
     await dbClear('printers'); await dbClear('products');
+    await dbClear('inventory');
     for(const p of data.printers) await dbPut('printers',p);
     for(const p of data.products) await dbPut('products',p);
+    for(const stock of (Array.isArray(data.inventory) ? data.inventory : [])) await dbPut('inventory', inventoryApi.normalizeStockRecord(stock));
     activePrinterId=null; editingProductId=null; await renderPrinterSelects(); const printers=await dbAll('printers');
-    if(printers.length) await selectPrinter(printers[0].id); await renderProducts(); toast('Backup restaurado.');
+    if(printers.length) await selectPrinter(printers[0].id); await renderProducts(); await renderInventory(); toast('Backup restaurado.');
   } catch(e) { toast('Não foi possível importar esse arquivo.'); }
   finally { document.getElementById('backup_file').value=''; }
 }
@@ -1307,8 +2003,10 @@ function switchPage(name) {
   const tab = document.querySelector(`.nav-tab[data-page="${name}"]`);
   if(tab) tab.classList.add('active');
   if(name === 'produtos') renderProducts();
+  if(name === 'estoque') renderInventory();
   if(name === 'projeto') syncProjectCompactMode();
   if(name === 'projeto' && autoProfileEnabled) applyPrinterDefaults(false);
+  if(name === 'rapido') calcQuick();
   calc();
 }
 
@@ -1409,6 +2107,21 @@ function platformCharge(price) {
 }
 function priceForMargin(cost, margin, taxPct) {
   return window.CALC3D_CORE ? window.CALC3D_CORE.priceForMargin(cost, margin, taxPct, platformConfigFromUI()) : cost * (1 + margin);
+}
+
+function calcQuick() {
+  const result = window.CALC3D_CORE ? window.CALC3D_CORE.calculateSimpleQuote({
+    weightG: gv('quick_weight_g'),
+    timeH: gv('quick_time_h'),
+    marginPct: gv('quick_margin_pct'),
+  }) : null;
+  if(!result) return;
+  set('quick_material_cost', fmt(result.weightCost));
+  set('quick_time_cost', fmt(result.timeCost));
+  set('quick_base_cost', fmt(result.baseCost));
+  set('quick_final_price', fmt(result.finalPrice));
+  set('quick_final_price_side', fmt(result.finalPrice));
+  set('quick_margin_display', fmtPct(result.marginPct * 100));
 }
 
 // ── Cálculo principal ─────────────────────────────────────────────────────────
@@ -1551,7 +2264,7 @@ function buildScenarios(custo, imp_pct) {
 }
 
 // init
-initApp().catch(error => { console.error(error); toast('Falha ao abrir o banco local.'); calc(); });
+bootstrapAuth().catch(error => { console.error(error); });
 </script>
 
 <script>

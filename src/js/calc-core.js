@@ -138,6 +138,29 @@
     };
   }
 
+  function calculateSimpleQuote(input = {}) {
+    const weightG = Math.max(Number(input.weightG) || 0, 0);
+    const timeH = Math.max(Number(input.timeH) || 0, 0);
+    const marginPct = Math.max(Number(input.marginPct) || 0, 0) / 100;
+    const materialKey = normalizeMaterial(input.material ?? '100');
+    const materialPricePerKg = MATERIAL_PRICES[materialKey] ?? MATERIAL_PRICES['100'];
+    const weightCost = weightG * (materialPricePerKg / 1000);
+    const timeRate = Number(input.timeRate) || 25;
+    const timeCost = timeH * timeRate;
+    const baseCost = weightCost + timeCost;
+    const finalPrice = baseCost * (1 + marginPct);
+    return {
+      materialKey,
+      materialPricePerKg,
+      weightCost,
+      timeCost,
+      baseCost,
+      finalPrice,
+      marginPct,
+      timeRate,
+    };
+  }
+
   const api = Object.freeze({
     MATERIAL_PRICES,
     SHOPEE_CPF_TIERS,
@@ -147,6 +170,7 @@
     platformCharge,
     priceForMargin,
     calculateProjectCosts,
+    calculateSimpleQuote,
   });
 
   if(typeof module !== 'undefined' && module.exports) module.exports = api;

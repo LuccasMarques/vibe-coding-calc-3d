@@ -1,7 +1,12 @@
-const CACHE = 'calc3d-v4';
+const CACHE = 'calc3d-v5';
 const ASSETS = [
   './',
   './index.html',
+  './src/js/app-state.js',
+  './src/js/dom-helpers.js',
+  './src/js/storage/idb.js',
+  './src/js/calc-core.js',
+  './src/js/inventory-core.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'

@@ -95,4 +95,12 @@ assert.ok(result.project.total > 0);
 assert.ok(result.project.porPeca > 0);
 assert.ok(result.machine.depH > 0);
 
+const simple = core.calculateSimpleQuote({
+  weightG: 100,
+  timeH: 2,
+  marginPct: 50,
+});
+assert.ok(simple.baseCost > 0);
+assert.ok(simple.finalPrice > simple.baseCost);
+
 console.log('calc-core: ok');
