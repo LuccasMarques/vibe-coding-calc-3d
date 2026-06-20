@@ -202,6 +202,9 @@
     .app-shell { grid-template-columns: 1fr; }
     .app-ads { display: none; }
   }
+  @media(max-width: 900px) {
+    .header-inner { flex-wrap: wrap; height: auto; padding: 0.75rem 0; }
+  }
 
   /* HEADER */
   header {
@@ -221,6 +224,7 @@
     justify-content: space-between;
     height: 60px;
     gap: 2rem;
+    position: relative;
   }
   .logo {
     display: flex;
@@ -269,6 +273,50 @@
     color: #fff;
     box-shadow: 0 10px 22px rgba(15,118,110,0.18);
   }
+  .header-actions {
+    display:flex;
+    align-items:center;
+    position: relative;
+    margin-left: auto;
+  }
+  .profile-trigger {
+    min-width: 120px;
+    justify-content: center;
+  }
+  .profile-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(360px, 92vw);
+    background: rgba(255,255,255,0.96);
+    border: 1px solid rgba(215,224,232,0.95);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    display: none;
+    z-index: 120;
+  }
+  .profile-panel.open { display:block; }
+  .profile-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .profile-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .profile-email {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .profile-panel .auth-form { margin-top: 0.85rem; }
+  .profile-panel .auth-status { margin-top: 0.75rem; }
 
   /* LAYOUT */
   main {
@@ -528,6 +576,7 @@
   .alert-info { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.20); color: var(--accent2); }
   .alert-danger { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.22); color: var(--danger); }
   .alert.hidden { display: none; }
+  .hidden { display: none !important; }
 
   /* BADGES */
   .badge {
@@ -731,6 +780,49 @@
       <button class="nav-tab" data-page="produtos" onclick="switchPage('produtos')">▦ Produtos</button>
       <button class="nav-tab" data-page="estoque" onclick="switchPage('estoque')">▤ Estoque</button>
     </nav>
+    <div class="header-actions">
+      <button id="profile-trigger" class="btn btn-ghost profile-trigger" type="button" onclick="toggleProfilePanel()">
+        Perfil
+      </button>
+      <div id="profile-panel" class="profile-panel">
+        <div class="profile-head">
+          <div>
+            <div class="profile-name" id="profile-name">Convidado</div>
+            <div class="profile-email" id="profile-email">Modo público ativo</div>
+          </div>
+          <button class="btn btn-ghost btn-small" type="button" onclick="toggleProfilePanel(false)">×</button>
+        </div>
+        <div id="profile-guest">
+          <p style="color:var(--text2);font-size:13px;line-height:1.5">Entre para liberar o modo avançado com impressoras, catálogo, estoque e backup.</p>
+          <form id="auth-form" class="auth-form">
+            <div class="field">
+              <label>Usuário</label>
+              <div class="input-wrap">
+                <input id="auth_username" type="text" autocomplete="username" placeholder="seu usuário">
+              </div>
+            </div>
+            <div class="field">
+              <label>Senha</label>
+              <div class="input-wrap">
+                <input id="auth_password" type="password" autocomplete="current-password" placeholder="••••••••">
+              </div>
+            </div>
+            <button class="btn btn-accent" type="submit">Entrar</button>
+          </form>
+        </div>
+        <div id="profile-session" class="hidden">
+          <p style="color:var(--text2);font-size:13px;line-height:1.5;margin-bottom:10px">Você já está logado e o modo avançado está liberado.</p>
+          <div class="auth-state" style="margin-top:0">
+            <div>
+              <strong id="profile-session-name">—</strong>
+              <p id="profile-session-email"></p>
+            </div>
+            <button class="btn btn-ghost btn-small" type="button" onclick="logoutSession()">Sair</button>
+          </div>
+        </div>
+        <div id="profile-status" class="auth-status">Abra o perfil para entrar.</div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -822,30 +914,7 @@
 
         <div class="card" style="margin-top:1rem" id="advanced-gate">
           <div class="card-title">Modo avançado</div>
-          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. O acesso fica separado para manter a versão pública simples.</p>
-          <form id="auth-form" class="auth-form">
-            <div class="field">
-              <label>Usuário</label>
-              <div class="input-wrap">
-                <input id="auth_username" type="text" autocomplete="username" placeholder="seu usuário">
-              </div>
-            </div>
-            <div class="field">
-              <label>Senha</label>
-              <div class="input-wrap">
-                <input id="auth_password" type="password" autocomplete="current-password" placeholder="••••••••">
-              </div>
-            </div>
-            <button class="btn btn-accent" type="submit">Desbloquear modo avançado</button>
-          </form>
-          <div id="auth-session" class="auth-state hidden">
-            <div>
-              <span style="font-size:12px;color:var(--text3)">Sessão ativa</span>
-              <strong id="auth-user-name">—</strong>
-              <p id="auth-user-email"></p>
-            </div>
-            <button class="btn btn-ghost btn-small" type="button" onclick="logoutSession()">Sair</button>
-          </div>
+          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. Use o botão Perfil no canto superior direito para entrar ou ver a sessão.</p>
           <div id="auth-status" class="auth-status">Modo avançado bloqueado até autenticação.</div>
         </div>
       </div>
@@ -1621,8 +1690,38 @@ function authUrl(path) {
 }
 
 function setAuthStatus(message) {
-  const el = document.getElementById('auth-status');
-  if(el) el.textContent = message;
+  const top = document.getElementById('profile-status');
+  const side = document.getElementById('auth-status');
+  if(top) top.textContent = message;
+  if(side) side.textContent = message;
+}
+
+function toggleProfilePanel(force) {
+  const panel = document.getElementById('profile-panel');
+  if(!panel) return;
+  const shouldOpen = typeof force === 'boolean' ? force : !panel.classList.contains('open');
+  panel.classList.toggle('open', shouldOpen);
+}
+
+function renderProfileMenu(user) {
+  const trigger = document.getElementById('profile-trigger');
+  const profileName = document.getElementById('profile-name');
+  const profileEmail = document.getElementById('profile-email');
+  const guestBlock = document.getElementById('profile-guest');
+  const sessionBlock = document.getElementById('profile-session');
+  const sessionName = document.getElementById('profile-session-name');
+  const sessionEmail = document.getElementById('profile-session-email');
+  const status = document.getElementById('profile-status');
+  if(trigger) trigger.textContent = user ? (user.name || user.id || 'Perfil') : 'Perfil';
+  if(profileName) profileName.textContent = user ? (user.name || user.id || 'Conta autorizada') : 'Convidado';
+  if(profileEmail) profileEmail.textContent = user ? (user.email || '') : 'Modo público ativo';
+  if(sessionName) sessionName.textContent = user ? (user.name || user.id || 'Conta autorizada') : '—';
+  if(sessionEmail) sessionEmail.textContent = user ? (user.email || '') : '';
+  if(guestBlock) guestBlock.classList.toggle('hidden', !!user);
+  if(sessionBlock) sessionBlock.classList.toggle('hidden', !user);
+  if(status) status.textContent = user
+    ? 'Sessão ativa. O modo avançado está liberado.'
+    : (authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.');
 }
 
 function lockApp() {
@@ -1727,6 +1826,16 @@ async function logoutSession() {
   } finally {
     applyAuthState(null);
     await bootstrapAuth();
+  }
+}
+
+function applyAuthState(sessionUser) {
+  if(sessionUser) {
+    unlockApp();
+    renderProfileMenu(sessionUser);
+  } else {
+    lockApp();
+    renderProfileMenu(null);
   }
 }
 
