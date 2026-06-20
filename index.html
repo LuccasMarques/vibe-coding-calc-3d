@@ -56,57 +56,10 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  .auth-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0.4rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(15,118,110,0.08);
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-  .auth-card h1 {
-    font-family: var(--mono);
-    font-size: 24px;
-    line-height: 1.2;
-    color: var(--text);
-    margin-bottom: 0.6rem;
-  }
-  .auth-card p {
-    color: var(--text2);
-    margin-bottom: 1rem;
-  }
   .auth-status {
     margin-top: 1rem;
     font-size: 13px;
     color: var(--text3);
-  }
-  .auth-session {
-    display: none;
-    margin-top: 1rem;
-    padding: 0.85rem 1rem;
-    border-radius: 16px;
-    background: rgba(15,118,110,0.06);
-    border: 1px solid rgba(15,118,110,0.14);
-    color: var(--text2);
-    gap: 10px;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .auth-session.visible {
-    display: flex;
-  }
-  .auth-session strong {
-    display: block;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-  }
-  .auth-login {
-    margin-top: 1rem;
   }
   .auth-form {
     display: grid;
@@ -280,33 +233,53 @@
     margin-left: auto;
   }
   .profile-trigger {
-    min-width: 120px;
+    min-width: 108px;
     justify-content: center;
+    position: relative;
+    padding-inline: 1rem;
   }
   .profile-panel {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
     width: min(360px, 92vw);
-    background: rgba(255,255,255,0.96);
-    border: 1px solid rgba(215,224,232,0.95);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+    border: 1px solid rgba(215,224,232,0.9);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(15,23,42,0.14);
     padding: 1rem;
     display: none;
     z-index: 120;
+    backdrop-filter: blur(16px);
   }
   .profile-panel.open { display:block; }
+  .profile-panel::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 20px;
+    width: 14px;
+    height: 14px;
+    background: inherit;
+    border-left: 1px solid rgba(215,224,232,0.85);
+    border-top: 1px solid rgba(215,224,232,0.85);
+    transform: rotate(45deg);
+    border-top-left-radius: 3px;
+    box-shadow: -4px -4px 12px rgba(15,23,42,0.05);
+  }
   .profile-head {
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
     gap:12px;
-    margin-bottom:12px;
+    margin-bottom:14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(215,224,232,0.75);
   }
+  .profile-head .btn { flex-shrink: 0; }
   .profile-name {
     font-family: var(--mono);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--text);
   }
@@ -315,8 +288,47 @@
     color: var(--text3);
     margin-top: 2px;
   }
-  .profile-panel .auth-form { margin-top: 0.85rem; }
-  .profile-panel .auth-status { margin-top: 0.75rem; }
+  .profile-strap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(15,118,110,0.08);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .profile-strap::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 0 5px rgba(15,118,110,0.09);
+  }
+  .profile-panel .auth-form { margin-top: 0.9rem; }
+  .profile-panel .auth-status {
+    margin-top: 0.85rem;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(15,118,110,0.06);
+    border: 1px solid rgba(15,118,110,0.10);
+    line-height: 1.45;
+  }
+  .profile-panel .field label {
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .profile-panel .input-wrap {
+    background: rgba(255,255,255,0.94);
+  }
+  .profile-panel p {
+    color: var(--text2);
+    font-size: 13px;
+    line-height: 1.5;
+  }
 
   /* LAYOUT */
   main {
@@ -782,15 +794,16 @@
     </nav>
     <div class="header-actions">
       <button id="profile-trigger" class="btn btn-ghost profile-trigger" type="button" onclick="toggleProfilePanel()">
-        Perfil
+        Login
       </button>
       <div id="profile-panel" class="profile-panel">
+        <div class="profile-strap">Acesso protegido</div>
         <div class="profile-head">
           <div>
             <div class="profile-name" id="profile-name">Convidado</div>
             <div class="profile-email" id="profile-email">Modo público ativo</div>
           </div>
-          <button class="btn btn-ghost btn-small" type="button" onclick="toggleProfilePanel(false)">×</button>
+          <button class="btn btn-ghost btn-small" type="button" onclick="toggleProfilePanel(false)">Fechar</button>
         </div>
         <div id="profile-guest">
           <p style="color:var(--text2);font-size:13px;line-height:1.5">Entre para liberar o modo avançado com impressoras, catálogo, estoque e backup.</p>
@@ -820,7 +833,7 @@
             <button class="btn btn-ghost btn-small" type="button" onclick="logoutSession()">Sair</button>
           </div>
         </div>
-        <div id="profile-status" class="auth-status">Abra o perfil para entrar.</div>
+        <div id="profile-status" class="auth-status">Abra o login para entrar.</div>
       </div>
     </div>
   </div>
@@ -914,7 +927,7 @@
 
         <div class="card" style="margin-top:1rem" id="advanced-gate">
           <div class="card-title">Modo avançado</div>
-          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. Use o botão Perfil no canto superior direito para entrar ou ver a sessão.</p>
+          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. Use o botão Login no canto superior direito para entrar ou ver a sessão.</p>
           <div id="auth-status" class="auth-status">Modo avançado bloqueado até autenticação.</div>
         </div>
       </div>
@@ -1711,17 +1724,16 @@ function renderProfileMenu(user) {
   const sessionBlock = document.getElementById('profile-session');
   const sessionName = document.getElementById('profile-session-name');
   const sessionEmail = document.getElementById('profile-session-email');
-  const status = document.getElementById('profile-status');
-  if(trigger) trigger.textContent = user ? (user.name || user.id || 'Perfil') : 'Perfil';
+  if(trigger) trigger.textContent = 'Login';
   if(profileName) profileName.textContent = user ? (user.name || user.id || 'Conta autorizada') : 'Convidado';
   if(profileEmail) profileEmail.textContent = user ? (user.email || '') : 'Modo público ativo';
   if(sessionName) sessionName.textContent = user ? (user.name || user.id || 'Conta autorizada') : '—';
   if(sessionEmail) sessionEmail.textContent = user ? (user.email || '') : '';
   if(guestBlock) guestBlock.classList.toggle('hidden', !!user);
   if(sessionBlock) sessionBlock.classList.toggle('hidden', !user);
-  if(status) status.textContent = user
+  setAuthStatus(user
     ? 'Sessão ativa. O modo avançado está liberado.'
-    : (authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.');
+    : (authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.'));
 }
 
 function lockApp() {
@@ -1743,34 +1755,6 @@ function unlockApp() {
     tab.disabled = false;
   });
   document.querySelectorAll('.requires-auth').forEach(el => el.classList.remove('hidden-locked'));
-}
-
-function renderAuthSession(user) {
-  const wrap = document.getElementById('auth-session');
-  const name = document.getElementById('auth-user-name');
-  const email = document.getElementById('auth-user-email');
-  if(!wrap || !name || !email) return;
-  if(user) {
-    name.textContent = user.name || user.id || 'Conta autorizada';
-    email.textContent = user.email || '';
-    wrap.classList.remove('hidden');
-  } else {
-    name.textContent = '—';
-    email.textContent = '';
-    wrap.classList.add('hidden');
-  }
-}
-
-function applyAuthState(sessionUser) {
-  if(sessionUser) {
-    unlockApp();
-    renderAuthSession(sessionUser);
-    setAuthStatus('Sessão ativa. O modo avançado está liberado.');
-  } else {
-    lockApp();
-    renderAuthSession(null);
-    setAuthStatus(authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.');
-  }
 }
 
 async function checkSession() {
