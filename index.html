@@ -575,13 +575,14 @@
         <div class="field">
           <label>Taxa da plataforma</label>
           <div class="input-wrap">
-            <select id="default_taxa_plat" onchange="toggleDefaultPlatformFields()">
-              <option value="0">Venda direta — 0%</option>
-              <option value="shopee_cpf_2026">Shopee Brasil — CPF 2026</option>
-              <option value="10">Mercado Livre — ~10%</option>
-              <option value="13">Mercado Livre Premium — ~13%</option>
-              <option value="custom_plat">Personalizado</option>
-            </select>
+              <select id="default_taxa_plat" onchange="toggleDefaultPlatformFields()">
+                <option value="0">Venda direta — 0%</option>
+                <option value="shopee_cpf_2026">Shopee Brasil — CPF 2026</option>
+                <option value="shopee_cnpj_2026">Shopee Brasil — CNPJ 2026</option>
+                <option value="10">Mercado Livre — ~10%</option>
+                <option value="13">Mercado Livre Premium — ~13%</option>
+                <option value="custom_plat">Personalizado</option>
+              </select>
           </div>
         </div>
         <div id="default_custom_plat_wrap" class="field" style="display:none">
@@ -1006,6 +1007,7 @@
                 <select id="taxa_plat" onchange="calc()">
                   <option value="0">Venda direta — 0%</option>
                   <option value="shopee_cpf_2026">Shopee Brasil — CPF 2026</option>
+                  <option value="shopee_cnpj_2026">Shopee Brasil — CNPJ 2026</option>
                   <option value="10">Mercado Livre Clássico — ~10%</option>
                   <option value="13">Mercado Livre Premium — ~13%</option>
                   <option value="6.5">Etsy — ~6,5%</option>
@@ -1023,9 +1025,9 @@
             </div>
           </div>
           <div id="shopee_wrap" style="display:none;margin-top:16px">
-            <div class="alert alert-info">Taxa automática por faixa de preço. Confirme os adicionais no detalhamento financeiro da sua conta.</div>
+            <div class="alert alert-info">Taxa automática por faixa de preço. No perfil CNPJ, a sobretaxa de conta CPF não é aplicada.</div>
             <div class="two-col" style="margin-top:12px">
-              <div class="field"><label>Sobretaxa da conta CPF</label><div class="input-wrap"><select id="shopee_cpf_extra_on" onchange="calc()"><option value="1" selected>Ativa</option><option value="0">Não aplicada</option></select></div></div>
+              <div class="field" id="shopee_cpf_extra_wrap"><label>Sobretaxa da conta CPF</label><div class="input-wrap"><select id="shopee_cpf_extra_on" onchange="calc()"><option value="1" selected>Ativa</option><option value="0">Não aplicada</option></select></div></div>
               <div class="field"><label>Valor adicional por item</label><div class="input-wrap"><input type="number" id="shopee_cpf_extra" value="3" min="0" step="0.50" oninput="calc()"><span class="input-unit">R$</span></div></div>
               <div class="field"><label>Campanha / destaque</label><div class="input-wrap"><input type="number" id="shopee_campanha" value="0" min="0" max="100" step="0.5" oninput="calc()"><span class="input-unit">%</span></div></div>
               <div class="field"><label>Reserva para devoluções</label><div class="input-wrap"><input type="number" id="shopee_devolucao" value="0" min="0" max="100" step="0.5" oninput="calc()"><span class="input-unit">%</span></div></div>
@@ -1386,7 +1388,9 @@ document.getElementById('taxa_plat').addEventListener('change', function() {
 function updatePlatformFields() {
   const value = gs('taxa_plat');
   document.getElementById('custom_plat_wrap').style.display = value === 'custom_plat' ? '' : 'none';
-  document.getElementById('shopee_wrap').style.display = value === 'shopee_cpf_2026' ? '' : 'none';
+  document.getElementById('shopee_wrap').style.display = (value === 'shopee_cpf_2026' || value === 'shopee_cnpj_2026') ? '' : 'none';
+  const cpfWrap = document.getElementById('shopee_cpf_extra_wrap');
+  if(cpfWrap) cpfWrap.style.display = value === 'shopee_cpf_2026' ? '' : 'none';
   calc();
 }
 
@@ -1494,11 +1498,12 @@ function calc() {
   set('p_plat',  fmt(v_plat));
   set('p_venda', fmt(venda));
 
-  const isShopee = gs('taxa_plat') === 'shopee_cpf_2026';
+  const isShopee = gs('taxa_plat') === 'shopee_cpf_2026' || gs('taxa_plat') === 'shopee_cnpj_2026';
   document.getElementById('p_shopee_faixa_row').style.display = isShopee ? '' : 'none';
   document.getElementById('p_shopee_fixa_row').style.display = isShopee ? '' : 'none';
   if(isShopee) {
-    set('p_shopee_faixa_label', 'Comissão Shopee · ' + platform.tier.label);
+    const profileLabel = gs('taxa_plat') === 'shopee_cnpj_2026' ? 'Shopee CNPJ' : 'Shopee CPF';
+    set('p_shopee_faixa_label', 'Comissão ' + profileLabel + ' · ' + platform.tier.label);
     set('p_shopee_comissao', fmt(platform.variable));
     set('p_shopee_fixa', fmt(platform.fixed));
   }

@@ -15,7 +15,7 @@ Estrutura mental do app:
 - Impressoras: perfis com custo da máquina, manutenção, energia, tributos e padrões rápidos.
 - Produtos: projetos salvos com materiais, tempos, gramatura, pós-processo, embalagem e preços.
 - Precificação: cálculo do custo e do preço de venda com taxas de plataforma e margem.
-- Plataforma: regras de venda, hoje focadas em Shopee CPF 2026.
+- Plataforma: regras de venda, hoje focadas em Shopee CPF 2026 e Shopee CNPJ 2026.
 
 Regras e decisões atuais do projeto:
 
@@ -29,6 +29,12 @@ Regras e decisões atuais do projeto:
   - PLA: R$ 100/kg;
   - PETG: R$ 80/kg;
 - por enquanto, não usar outras tabelas de material.
+- perfil Shopee CNPJ 2026 usa a tabela:
+  - até R$ 79,99: 20% + R$ 4;
+  - R$ 80,00 a R$ 99,99: 14% + R$ 16;
+  - R$ 100,00 a R$ 199,99: 14% + R$ 20;
+  - R$ 200,00 a R$ 499,99: 14% + R$ 26;
+  - acima de R$ 500,00: 14% + R$ 26.
 
 Direção de usabilidade:
 

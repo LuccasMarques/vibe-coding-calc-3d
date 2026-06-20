@@ -23,6 +23,34 @@ assert.strictEqual(shopee.fixed, 7);
 near(shopee.variable, 10);
 near(shopee.total, 17);
 
+const shopeeCnpj = core.platformCharge(50, {
+  taxaPlat: 'shopee_cnpj_2026',
+  shopeeCpfExtraOn: 1,
+  shopeeCpfExtra: 3,
+  shopeeCampanha: 0,
+  shopeeDevolucao: 0,
+  shopeeCupom: 0,
+  shopeeAds: 0,
+  shopeeFrete: 0,
+});
+assert.strictEqual(shopeeCnpj.fixed, 4);
+near(shopeeCnpj.variable, 10);
+near(shopeeCnpj.total, 14);
+
+const shopeeCnpjHigh = core.platformCharge(600, {
+  taxaPlat: 'shopee_cnpj_2026',
+  shopeeCpfExtraOn: 1,
+  shopeeCpfExtra: 3,
+  shopeeCampanha: 0,
+  shopeeDevolucao: 0,
+  shopeeCupom: 0,
+  shopeeAds: 0,
+  shopeeFrete: 0,
+});
+assert.strictEqual(shopeeCnpjHigh.fixed, 26);
+near(shopeeCnpjHigh.variable, 84);
+near(shopeeCnpjHigh.total, 110);
+
 const custom = core.platformCharge(100, { taxaPlat: 'custom_plat', customPlatVal: 12.5 });
 near(custom.total, 12.5);
 

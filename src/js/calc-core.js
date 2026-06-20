@@ -4,7 +4,7 @@
     '80': 80,
   });
 
-  const SHOPEE_TIERS = Object.freeze([
+  const SHOPEE_CPF_TIERS = Object.freeze([
     { min: 0,   max: 8,        pct: 0.50, fixed: 0,  label: 'R$ 0–7,99 · 50%' },
     { min: 8,   max: 80,       pct: 0.20, fixed: 4,  label: 'R$ 8–79,99 · 20%' },
     { min: 80,  max: 100,      pct: 0.14, fixed: 16, label: 'R$ 80–99,99 · 14%' },
@@ -12,21 +12,30 @@
     { min: 200, max: Infinity, pct: 0.14, fixed: 26, label: 'R$ 200+ · 14%' },
   ]);
 
+  const SHOPEE_CNPJ_TIERS = Object.freeze([
+    { min: 0,   max: 80,       pct: 0.20, fixed: 4,  label: 'Até R$ 79,99 · 20% + R$ 4' },
+    { min: 80,  max: 100,      pct: 0.14, fixed: 16, label: 'R$ 80,00–99,99 · 14% + R$ 16' },
+    { min: 100, max: 200,      pct: 0.14, fixed: 20, label: 'R$ 100,00–199,99 · 14% + R$ 20' },
+    { min: 200, max: 500,      pct: 0.14, fixed: 26, label: 'R$ 200,00–499,99 · 14% + R$ 26' },
+    { min: 500, max: Infinity, pct: 0.14, fixed: 26, label: 'Acima de R$ 500,00 · 14% + R$ 26' },
+  ]);
+
   function normalizeMaterial(value) {
     const text = String(value ?? '');
     return Object.prototype.hasOwnProperty.call(MATERIAL_PRICES, text) ? text : '100';
   }
 
-  function shopeeTier(price) {
-    return SHOPEE_TIERS.find(tier => price >= tier.min && price < tier.max) || SHOPEE_TIERS[0];
+  function shopeeTier(price, profile = 'cpf') {
+    const tiers = profile === 'shopee_cnpj_2026' ? SHOPEE_CNPJ_TIERS : SHOPEE_CPF_TIERS;
+    return tiers.find(tier => price >= tier.min && price < tier.max) || tiers[0];
   }
 
   function platformCharge(price, config = {}) {
     const selected = config.taxaPlat ?? 0;
-    if(selected === 'shopee_cpf_2026') {
-      const tier = shopeeTier(price);
+    if(selected === 'shopee_cpf_2026' || selected === 'shopee_cnpj_2026') {
+      const tier = shopeeTier(price, selected);
       const extraPct = ((Number(config.shopeeCampanha) || 0) + (Number(config.shopeeDevolucao) || 0)) / 100;
-      const cpfExtra = config.shopeeCpfExtraOn ? (Number(config.shopeeCpfExtra) || 0) : 0;
+      const cpfExtra = selected === 'shopee_cpf_2026' && config.shopeeCpfExtraOn ? (Number(config.shopeeCpfExtra) || 0) : 0;
       const fixed = tier.fixed + cpfExtra + (Number(config.shopeeCupom) || 0) + (Number(config.shopeeAds) || 0) + (Number(config.shopeeFrete) || 0);
       const variable = price * (tier.pct + extraPct);
       return { total: variable + fixed, variable, fixed, pct: tier.pct + extraPct, tier };
@@ -38,12 +47,13 @@
   }
 
   function priceForMargin(cost, margin, taxPct, config = {}) {
-    if((config.taxaPlat ?? 0) !== 'shopee_cpf_2026') {
+    if((config.taxaPlat ?? 0) !== 'shopee_cpf_2026' && (config.taxaPlat ?? 0) !== 'shopee_cnpj_2026') {
       const divisor = 1 - margin - taxPct - platformCharge(1, config).pct;
       return divisor > 0 ? cost / divisor : cost * (1 + margin);
     }
     const candidates = [];
-    SHOPEE_TIERS.forEach(tier => {
+    const tiers = (config.taxaPlat ?? 0) === 'shopee_cnpj_2026' ? SHOPEE_CNPJ_TIERS : SHOPEE_CPF_TIERS;
+    tiers.forEach(tier => {
       const extraPct = ((Number(config.shopeeCampanha) || 0) + (Number(config.shopeeDevolucao) || 0)) / 100;
       const cpfExtra = config.shopeeCpfExtraOn ? (Number(config.shopeeCpfExtra) || 0) : 0;
       const fixed = tier.fixed + cpfExtra + (Number(config.shopeeCupom) || 0) + (Number(config.shopeeAds) || 0) + (Number(config.shopeeFrete) || 0);
@@ -130,7 +140,8 @@
 
   const api = Object.freeze({
     MATERIAL_PRICES,
-    SHOPEE_TIERS,
+    SHOPEE_CPF_TIERS,
+    SHOPEE_CNPJ_TIERS,
     normalizeMaterial,
     shopeeTier,
     platformCharge,
