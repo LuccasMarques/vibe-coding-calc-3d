@@ -145,7 +145,7 @@
     const materialKey = normalizeMaterial(input.material ?? '100');
     const materialPricePerKg = MATERIAL_PRICES[materialKey] ?? MATERIAL_PRICES['100'];
     const weightCost = weightG * (materialPricePerKg / 1000);
-    const timeRate = Number(input.timeRate) || 25;
+    const timeRate = Number(input.timeRate) || 2.5;
     const timeCost = timeH * timeRate;
     const baseCost = weightCost + timeCost;
     const finalPrice = baseCost * (1 + marginPct);

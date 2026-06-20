@@ -56,30 +56,6 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  body.auth-locked header,
-  body.auth-locked main,
-  body.auth-locked footer,
-  body.auth-locked .app-shell {
-    display: none;
-  }
-  .auth-screen {
-    min-height: 100vh;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  body.auth-locked .auth-screen {
-    display: flex;
-  }
-  .auth-card {
-    width: min(100%, 520px);
-    background: rgba(255,255,255,0.88);
-    border: 1px solid rgba(215,224,232,0.9);
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-    padding: 1.75rem;
-  }
   .auth-badge {
     display: inline-flex;
     align-items: center;
@@ -144,6 +120,31 @@
     width: 100%;
     justify-content: center;
   }
+  .auth-state {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(215,224,232,0.9);
+    background: rgba(255,255,255,0.8);
+  }
+  .auth-state.hidden {
+    display: none;
+  }
+  .auth-state strong {
+    display: block;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .auth-state p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text3);
+  }
 
   .app-shell {
     max-width: 1600px;
@@ -184,6 +185,18 @@
   .ad-slot span {
     font-size: 12px;
     line-height: 1.5;
+  }
+  .nav-tab.locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .nav-tab.locked:hover {
+    background: none;
+    color: var(--text2);
+    box-shadow: none;
+  }
+  .requires-auth.hidden-locked {
+    display: none;
   }
   @media(max-width: 1240px) {
     .app-shell { grid-template-columns: 1fr; }
@@ -795,7 +808,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-name">Taxa padrão por hora</span>
-            <span class="metric-val">R$ 25,00</span>
+            <span class="metric-val">R$ 2,50</span>
           </div>
           <div class="metric-row">
             <span class="metric-name">Margem aplicada</span>
@@ -806,12 +819,41 @@
             <span class="value" id="quick_final_price_side">R$ 0,00</span>
           </div>
         </div>
+
+        <div class="card" style="margin-top:1rem" id="advanced-gate">
+          <div class="card-title">Modo avançado</div>
+          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. O acesso fica separado para manter a versão pública simples.</p>
+          <form id="auth-form" class="auth-form">
+            <div class="field">
+              <label>Usuário</label>
+              <div class="input-wrap">
+                <input id="auth_username" type="text" autocomplete="username" placeholder="seu usuário">
+              </div>
+            </div>
+            <div class="field">
+              <label>Senha</label>
+              <div class="input-wrap">
+                <input id="auth_password" type="password" autocomplete="current-password" placeholder="••••••••">
+              </div>
+            </div>
+            <button class="btn btn-accent" type="submit">Desbloquear modo avançado</button>
+          </form>
+          <div id="auth-session" class="auth-state hidden">
+            <div>
+              <span style="font-size:12px;color:var(--text3)">Sessão ativa</span>
+              <strong id="auth-user-name">—</strong>
+              <p id="auth-user-email"></p>
+            </div>
+            <button class="btn btn-ghost btn-small" type="button" onclick="logoutSession()">Sair</button>
+          </div>
+          <div id="auth-status" class="auth-status">Modo avançado bloqueado até autenticação.</div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- ======================== PÁGINA: MÁQUINA ======================== -->
-  <div class="page" id="page-maquina">
+  <div class="page requires-auth" id="page-maquina">
     <div class="page-header">
       <h2>// Impressoras</h2>
       <p>Cadastre cada máquina para aplicar seus custos reais aos produtos.</p>
@@ -1039,7 +1081,7 @@
   </div>
 
   <!-- ======================== PÁGINA: PROJETO ======================== -->
-  <div class="page" id="page-projeto">
+  <div class="page requires-auth" id="page-projeto">
     <div class="page-header">
       <h2>// Custos do projeto</h2>
       <p>Escolha a impressora e preencha só tempo e gramas; o perfil completa o resto.</p>
@@ -1246,7 +1288,7 @@
   </div>
 
   <!-- ======================== PÁGINA: PRECIFICAÇÃO ======================== -->
-  <div class="page" id="page-preco">
+  <div class="page requires-auth" id="page-preco">
     <div class="page-header">
       <h2>// Precificação</h2>
       <p>Defina margens e taxas para chegar ao preço de venda ideal.</p>
@@ -1404,7 +1446,7 @@
   </div>
 
   <!-- ======================== PÁGINA: PRODUTOS ======================== -->
-  <div class="page" id="page-produtos">
+  <div class="page requires-auth" id="page-produtos">
     <div class="page-header">
       <h2>// Produtos salvos</h2>
       <p>Seu catálogo local de custos e preços. Os dados ficam neste dispositivo.</p>
@@ -1422,7 +1464,7 @@
   </div>
 
   <!-- ======================== PÁGINA: ESTOQUE ======================== -->
-  <div class="page" id="page-estoque">
+  <div class="page requires-auth" id="page-estoque">
     <div class="page-header">
       <h2>// Controle de estoque</h2>
       <p>Veja quais produtos estão prontos para entrega e ajuste as quantidades sem sair do fluxo da precificadora.</p>
@@ -1545,6 +1587,7 @@ let editingProductId = null;
 let editingInventoryProductId = null;
 let autoProfileEnabled = localStorage.getItem(autoProfileStorageKey) !== '0';
 let compactProjectMode = localStorage.getItem(compactStorageKey) !== '0';
+let advancedUnlocked = false;
 const dbAll = store => window.dbAll(db, store);
 const dbGet = (store, id) => window.dbGet(db, store, id);
 const dbPut = (store, value) => window.dbPut(db, store, value);
@@ -1583,11 +1626,24 @@ function setAuthStatus(message) {
 }
 
 function lockApp() {
-  document.body.classList.add('auth-locked');
+  advancedUnlocked = false;
+  document.body.classList.add('advanced-locked');
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    if(tab.dataset.page === 'rapido') return;
+    tab.classList.add('locked');
+    tab.disabled = true;
+  });
+  document.querySelectorAll('.requires-auth').forEach(el => el.classList.add('hidden-locked'));
 }
 
 function unlockApp() {
-  document.body.classList.remove('auth-locked');
+  advancedUnlocked = true;
+  document.body.classList.remove('advanced-locked');
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.remove('locked');
+    tab.disabled = false;
+  });
+  document.querySelectorAll('.requires-auth').forEach(el => el.classList.remove('hidden-locked'));
 }
 
 function renderAuthSession(user) {
@@ -1598,11 +1654,23 @@ function renderAuthSession(user) {
   if(user) {
     name.textContent = user.name || user.id || 'Conta autorizada';
     email.textContent = user.email || '';
-    wrap.classList.add('visible');
+    wrap.classList.remove('hidden');
   } else {
     name.textContent = '—';
     email.textContent = '';
-    wrap.classList.remove('visible');
+    wrap.classList.add('hidden');
+  }
+}
+
+function applyAuthState(sessionUser) {
+  if(sessionUser) {
+    unlockApp();
+    renderAuthSession(sessionUser);
+    setAuthStatus('Sessão ativa. O modo avançado está liberado.');
+  } else {
+    lockApp();
+    renderAuthSession(null);
+    setAuthStatus(authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.');
   }
 }
 
@@ -1642,7 +1710,8 @@ async function loginWithCredentials() {
 }
 
 async function bootstrapAuth() {
-  unlockApp();
+  const session = await checkSession();
+  applyAuthState(session);
   await initApp();
 }
 
@@ -1656,10 +1725,15 @@ async function logoutSession() {
   } catch (error) {
     console.error(error);
   } finally {
-    setAuthStatus('Sessão encerrada. Entre novamente para continuar.');
+    applyAuthState(null);
     await bootstrapAuth();
   }
 }
+
+document.getElementById('auth-form').addEventListener('submit', event => {
+  event.preventDefault();
+  loginWithCredentials();
+});
 
 async function initApp() {
   db = await openDB();
@@ -1997,6 +2071,11 @@ function fmtPct(v) { return v.toFixed(1).replace('.',',') + '%'; }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
 function switchPage(name) {
+  const protectedPage = name !== 'rapido';
+  if(protectedPage && !advancedUnlocked) {
+    toast('Faça login para abrir o modo avançado.');
+    name = 'rapido';
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');

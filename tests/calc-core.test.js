@@ -102,5 +102,6 @@ const simple = core.calculateSimpleQuote({
 });
 assert.ok(simple.baseCost > 0);
 assert.ok(simple.finalPrice > simple.baseCost);
+assert.strictEqual(simple.timeRate, 2.5);
 
 console.log('calc-core: ok');
