@@ -9,10 +9,7 @@
     productDefaults: {nome_proj:'',material:'100',tempo_h:4,tempo_m:30,filamento_g:80,pos_proc:.5,qtd_pecas:1,taxa_perda:15,embalagem:1.5,emb_protecao:0,emb_etiqueta:0,emb_brinde:0,frete:0,outros:0,modo_preco:'margem',base_preco:'peca',margem:40,preco_venda_input:0,perfil_tributario:'cpf',impostos:0,taxa_plat:0,custom_plat_val:0,shopee_cpf_extra_on:1,shopee_cpf_extra:3,shopee_campanha:0,shopee_devolucao:0,shopee_cupom:0,shopee_ads:0,shopee_frete:0},
     autoProfileStorageKey: 'calc3d-auto-profile',
     compactStorageKey: 'calc3d-project-compact',
-    authApiBaseUrl: typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
-      ? 'http://localhost:8787'
-      : '',
-    authLoginPath: '/api/auth/login',
+    authApiBaseUrl: '',
   });
 
   if(typeof window !== 'undefined') window.CALC3D_APP = api;

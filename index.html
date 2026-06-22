@@ -56,49 +56,6 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  .auth-status {
-    margin-top: 1rem;
-    font-size: 13px;
-    color: var(--text3);
-  }
-  .auth-form {
-    display: grid;
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-  .auth-form .field {
-    gap: 4px;
-  }
-  .auth-form .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .auth-state {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0.9rem 1rem;
-    border-radius: 16px;
-    border: 1px solid rgba(215,224,232,0.9);
-    background: rgba(255,255,255,0.8);
-  }
-  .auth-state.hidden {
-    display: none;
-  }
-  .auth-state strong {
-    display: block;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-  }
-  .auth-state p {
-    margin: 0;
-    font-size: 12px;
-    color: var(--text3);
-  }
-
   .app-shell {
     max-width: 1600px;
     margin: 0 auto;
@@ -235,99 +192,8 @@
   .profile-trigger {
     min-width: 108px;
     justify-content: center;
-    position: relative;
     padding-inline: 1rem;
-  }
-  .profile-panel {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    width: min(360px, 92vw);
-    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
-    border: 1px solid rgba(215,224,232,0.9);
-    border-radius: 22px;
-    box-shadow: 0 24px 60px rgba(15,23,42,0.14);
-    padding: 1rem;
-    display: none;
-    z-index: 120;
-    backdrop-filter: blur(16px);
-  }
-  .profile-panel.open { display:block; }
-  .profile-panel::before {
-    content: '';
-    position: absolute;
-    top: -7px;
-    right: 20px;
-    width: 14px;
-    height: 14px;
-    background: inherit;
-    border-left: 1px solid rgba(215,224,232,0.85);
-    border-top: 1px solid rgba(215,224,232,0.85);
-    transform: rotate(45deg);
-    border-top-left-radius: 3px;
-    box-shadow: -4px -4px 12px rgba(15,23,42,0.05);
-  }
-  .profile-head {
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px;
-    margin-bottom:14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(215,224,232,0.75);
-  }
-  .profile-head .btn { flex-shrink: 0; }
-  .profile-name {
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .profile-email {
-    font-size: 12px;
-    color: var(--text3);
-    margin-top: 2px;
-  }
-  .profile-strap {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 0.75rem;
-    padding: 0.35rem 0.7rem;
-    border-radius: 999px;
-    background: rgba(15,118,110,0.08);
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .profile-strap::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: currentColor;
-    box-shadow: 0 0 0 5px rgba(15,118,110,0.09);
-  }
-  .profile-panel .auth-form { margin-top: 0.9rem; }
-  .profile-panel .auth-status {
-    margin-top: 0.85rem;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(15,118,110,0.06);
-    border: 1px solid rgba(15,118,110,0.10);
-    line-height: 1.45;
-  }
-  .profile-panel .field label {
-    font-size: 12px;
-    color: var(--text2);
-  }
-  .profile-panel .input-wrap {
-    background: rgba(255,255,255,0.94);
-  }
-  .profile-panel p {
-    color: var(--text2);
-    font-size: 13px;
-    line-height: 1.5;
+    pointer-events: none;
   }
 
   /* LAYOUT */
@@ -589,6 +455,80 @@
   .alert-danger { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.22); color: var(--danger); }
   .alert.hidden { display: none; }
   .hidden { display: none !important; }
+  .panel-note {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .panel-note strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .panel-note.compact {
+    margin-top: 10px;
+  }
+  .btn-fluid {
+    width: 100%;
+    justify-content: center;
+  }
+  .section-copy {
+    color: var(--text2);
+    font-size: 13px;
+    line-height: 1.55;
+    max-width: 68ch;
+  }
+  .section-copy.compact {
+    color: var(--text3);
+    font-size: 12px;
+  }
+  .stack-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .mt-0 { margin-top: 0 !important; }
+  .mt-8 { margin-top: 8px !important; }
+  .mt-10 { margin-top: 10px !important; }
+  .mt-12 { margin-top: 12px !important; }
+  .mt-14 { margin-top: 14px !important; }
+  .mb-14 { margin-bottom: 14px !important; }
+  .input-right-pad { padding-right: 12px !important; }
+  .min-w-220 { min-width: 220px; }
+  .metric-spot {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .note-shell {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .note-shell strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .space-between-note {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+    gap: 8px;
+  }
 
   /* BADGES */
   .badge {
@@ -793,47 +733,8 @@
       <button class="nav-tab" data-page="estoque" onclick="switchPage('estoque')">▤ Estoque</button>
     </nav>
     <div class="header-actions">
-      <button id="profile-trigger" class="btn btn-ghost profile-trigger" type="button" onclick="toggleProfilePanel()">
-        Login
-      </button>
-      <div id="profile-panel" class="profile-panel">
-        <div class="profile-strap">Acesso protegido</div>
-        <div class="profile-head">
-          <div>
-            <div class="profile-name" id="profile-name">Convidado</div>
-            <div class="profile-email" id="profile-email">Modo público ativo</div>
-          </div>
-          <button class="btn btn-ghost btn-small" type="button" onclick="toggleProfilePanel(false)">Fechar</button>
-        </div>
-        <div id="profile-guest">
-          <p style="color:var(--text2);font-size:13px;line-height:1.5">Entre para liberar o modo avançado com impressoras, catálogo, estoque e backup.</p>
-          <form id="auth-form" class="auth-form">
-            <div class="field">
-              <label>Usuário</label>
-              <div class="input-wrap">
-                <input id="auth_username" type="text" autocomplete="username" placeholder="seu usuário">
-              </div>
-            </div>
-            <div class="field">
-              <label>Senha</label>
-              <div class="input-wrap">
-                <input id="auth_password" type="password" autocomplete="current-password" placeholder="••••••••">
-              </div>
-            </div>
-            <button class="btn btn-accent" type="submit">Entrar</button>
-          </form>
-        </div>
-        <div id="profile-session" class="hidden">
-          <p style="color:var(--text2);font-size:13px;line-height:1.5;margin-bottom:10px">Você já está logado e o modo avançado está liberado.</p>
-          <div class="auth-state" style="margin-top:0">
-            <div>
-              <strong id="profile-session-name">—</strong>
-              <p id="profile-session-email"></p>
-            </div>
-            <button class="btn btn-ghost btn-small" type="button" onclick="logoutSession()">Sair</button>
-          </div>
-        </div>
-        <div id="profile-status" class="auth-status">Abra o login para entrar.</div>
+      <div class="profile-trigger btn btn-ghost" aria-label="Acesso livre">
+        Acesso livre
       </div>
     </div>
   </div>
@@ -875,7 +776,7 @@
               </div>
             </div>
           </div>
-          <div class="alert alert-info" style="margin-top:12px">
+          <div class="alert alert-info mt-12">
             ℹ Este modo usa taxas padrão de referência para material e hora. O objetivo aqui é ser rápido e direto.
           </div>
         </div>
@@ -898,7 +799,7 @@
             <span class="label">Preço final</span>
             <span class="value" id="quick_final_price">R$ 0,00</span>
           </div>
-          <div style="margin-top:12px" class="actions">
+          <div class="actions mt-12">
             <button class="btn btn-accent" onclick="switchPage('projeto')">Abrir modo avançado</button>
           </div>
         </div>
@@ -925,10 +826,10 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:1rem" id="advanced-gate">
+        <div class="card mt-14" id="advanced-gate">
           <div class="card-title">Modo avançado</div>
-          <p style="color:var(--text2);font-size:13px;max-width:60ch">O modo avançado libera impressoras, catálogo, estoque e backup. Use o botão Login no canto superior direito para entrar ou ver a sessão.</p>
-          <div id="auth-status" class="auth-status">Modo avançado bloqueado até autenticação.</div>
+          <p class="section-copy">Tudo liberado por enquanto. Use o fluxo completo sem depender de servidor de autenticação.</p>
+          <div class="alert alert-info mt-12">ℹ A autenticação foi desativada temporariamente para você conseguir usar tudo enquanto o backend não estiver pronto.</div>
         </div>
       </div>
     </div>
@@ -944,10 +845,10 @@
       <div class="card-title">Perfil selecionado</div>
       <div class="three-col">
         <div class="field"><label>Impressora</label><div class="input-wrap"><select id="printer_select" onchange="selectPrinter(this.value)"></select></div></div>
-        <div class="field"><label>Nome</label><div class="input-wrap"><input id="printer_name" type="text" value="Impressora principal" style="padding-right:12px"></div></div>
-        <div class="field"><label>Modelo</label><div class="input-wrap"><input id="printer_model" type="text" placeholder="Ex: Ender 3 V3" style="padding-right:12px"></div></div>
+        <div class="field"><label>Nome</label><div class="input-wrap"><input id="printer_name" type="text" value="Impressora principal" class="input-right-pad"></div></div>
+        <div class="field"><label>Modelo</label><div class="input-wrap"><input id="printer_model" type="text" placeholder="Ex: Ender 3 V3" class="input-right-pad"></div></div>
       </div>
-      <div class="actions" style="margin-top:14px">
+      <div class="actions mt-14">
         <button class="btn btn-accent" onclick="savePrinter()">Salvar impressora</button>
         <button class="btn btn-ghost" onclick="newPrinter()">Nova</button>
         <button class="btn btn-danger" onclick="deletePrinter()">Excluir</button>
@@ -955,7 +856,7 @@
     </div>
     <div class="card">
       <div class="card-title">Perfil rápido padrão</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:14px;max-width:72ch">Esses valores são carregados no projeto quando você escolhe esta impressora. Assim, no uso normal você só ajusta tempo e gramas.</p>
+      <p class="section-copy mb-14">Esses valores são carregados no projeto quando você escolhe esta impressora. Assim, no uso normal você só ajusta tempo e gramas.</p>
       <div class="three-col">
         <div class="field">
           <label>Material padrão</label>
@@ -1026,7 +927,7 @@
           </div>
         </div>
       </div>
-      <p style="color:var(--text3);font-size:12px;margin-top:10px">Você pode guardar um perfil diferente para cada impressora. Ele vira o ponto de partida na calculadora.</p>
+      <p class="section-copy compact mt-10">Você pode guardar um perfil diferente para cada impressora. Ele vira o ponto de partida na calculadora.</p>
     </div>
     <div class="layout-sidebar">
       <div>
@@ -1154,8 +1055,8 @@
             <span class="value" id="cfg_total_h">R$ 0,00</span>
           </div>
         </div>
-        <div style="margin-top:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.6">
-          <strong style="color:var(--text);display:block;margin-bottom:4px">Como funciona</strong>
+        <div class="note-shell">
+          <strong>Como funciona</strong>
           O custo operacional por hora inclui depreciação, energia e manutenção. A mão de obra é calculada separadamente por projeto, conforme o tempo de envolvimento.
         </div>
       </div>
@@ -1166,7 +1067,7 @@
   <div class="page requires-auth" id="page-projeto">
     <div class="page-header">
       <h2>// Custos do projeto</h2>
-      <p>Escolha a impressora e preencha só tempo e gramas; o perfil completa o resto.</p>
+      <p class="section-copy">Escolha a impressora e preencha só tempo e gramas; o perfil completa o resto.</p>
     </div>
     <div class="card">
       <div class="card-title">Entrada rápida</div>
@@ -1207,7 +1108,7 @@
           </div>
         </div>
       </div>
-      <div class="actions" style="margin-top:14px">
+      <div class="actions mt-14">
         <button class="btn btn-accent" onclick="applyPrinterDefaults(true)">Aplicar perfil agora</button>
         <button id="toggle_advanced_btn" class="btn btn-ghost" onclick="toggleProjectCompactMode()">Editar ajustes avançados</button>
         <button class="btn btn-ghost" onclick="switchPage('preco')">Ir para preço</button>
@@ -1221,13 +1122,13 @@
             <div class="field">
               <label>Nome do projeto</label>
               <div class="input-wrap">
-                <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" style="font-family:var(--sans);padding-right:12px">
+                <input type="text" id="nome_proj" placeholder="Ex: Suporte de parede v2" class="input-right-pad">
               </div>
             </div>
-        <div class="field">
-          <label>Material / filamento</label>
-          <div class="input-wrap">
-            <select id="material" onchange="updateMaterial()">
+            <div class="field">
+              <label>Material / filamento</label>
+              <div class="input-wrap">
+                <select id="material" onchange="updateMaterial()">
                   <option value="100">PLA — R$ 100/kg (padrão)</option>
                   <option value="80">PETG — R$ 80/kg</option>
                 </select>
@@ -1266,12 +1167,12 @@
               <span class="slider-value" id="sl_perda">15%</span>
             </div>
             <input type="range" id="taxa_perda" min="0" max="40" value="15" step="1" oninput="document.getElementById('sl_perda').textContent=this.value+'%';calc()">
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:2px">
+            <div class="space-between-note">
               <span>0% — sem perda</span>
               <span>40% — alto retrabalho</span>
             </div>
           </div>
-          <div class="alert alert-info" style="margin-top:12px">
+          <div class="alert alert-info mt-12">
             ℹ Média típica para FDM: 8–15%. Se usa suporte intenso ou material difícil, considere 15–25%.
           </div>
         </div>
@@ -1357,14 +1258,14 @@
             <span class="value" id="r_total">R$ 0,00</span>
           </div>
         </div>
-        <div style="margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:1px">Custo por peça</div>
-          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)" id="r_por_peca">R$ 0,00</div>
+        <div class="panel-note compact">
+          <strong>Custo por peça</strong>
+          <div class="metric-spot" id="r_por_peca">R$ 0,00</div>
         </div>
-        <button class="btn btn-accent" style="width:100%;margin-top:10px;justify-content:center" onclick="switchPage('preco')">
+        <button class="btn btn-accent btn-fluid mt-10" onclick="switchPage('preco')">
           Calcular preço de venda →
         </button>
-        <button class="btn btn-ghost" style="width:100%;margin-top:8px;justify-content:center" onclick="saveProduct()">Salvar produto</button>
+        <button class="btn btn-ghost btn-fluid mt-8" onclick="saveProduct()">Salvar produto</button>
       </div>
     </div>
   </div>
@@ -1373,7 +1274,7 @@
   <div class="page requires-auth" id="page-preco">
     <div class="page-header">
       <h2>// Precificação</h2>
-      <p>Defina margens e taxas para chegar ao preço de venda ideal.</p>
+      <p class="section-copy">Defina margens e taxas para chegar ao preço de venda ideal.</p>
     </div>
     <div class="layout-sidebar">
       <div>
@@ -1516,13 +1417,13 @@
             <span class="value" id="p_venda">R$ 0,00</span>
           </div>
         </div>
-        <div id="aviso_lucro" class="alert alert-danger hidden" style="margin-top:10px">
+        <div id="aviso_lucro" class="alert alert-danger hidden mt-10">
           ⚠ Preço abaixo do custo de produção! Você está vendendo no prejuízo.
         </div>
-        <div id="aviso_margem_baixa" class="alert alert-warn hidden" style="margin-top:10px">
+        <div id="aviso_margem_baixa" class="alert alert-warn hidden mt-10">
           ⚠ Margem abaixo de 20%. Revise se os custos fixos estão cobertos.
         </div>
-        <button class="btn btn-accent" style="width:100%;margin-top:10px;justify-content:center" onclick="saveProduct()">Salvar produto com este preço</button>
+        <button class="btn btn-accent btn-fluid mt-10" onclick="saveProduct()">Salvar produto com este preço</button>
       </div>
     </div>
   </div>
@@ -1531,7 +1432,7 @@
   <div class="page requires-auth" id="page-produtos">
     <div class="page-header">
       <h2>// Produtos salvos</h2>
-      <p>Seu catálogo local de custos e preços. Os dados ficam neste dispositivo.</p>
+      <p class="section-copy">Seu catálogo local de custos e preços. Os dados ficam neste dispositivo.</p>
     </div>
     <div class="toolbar">
       <div class="input-wrap"><input id="product_search" type="search" placeholder="Buscar produto..." oninput="renderProducts()" style="padding-right:12px"></div>
@@ -1549,7 +1450,7 @@
   <div class="page requires-auth" id="page-estoque">
     <div class="page-header">
       <h2>// Controle de estoque</h2>
-      <p>Veja quais produtos estão prontos para entrega e ajuste as quantidades sem sair do fluxo da precificadora.</p>
+      <p class="section-copy">Veja quais produtos estão prontos para entrega e ajuste as quantidades sem sair do fluxo da precificadora.</p>
     </div>
 
     <div class="stock-summary" id="stock_summary"></div>
@@ -1597,20 +1498,20 @@
           </div>
         </div>
       </div>
-      <div class="actions" style="margin-top:14px">
+      <div class="actions mt-14">
         <button class="btn btn-accent" onclick="saveInventoryRecord()">Salvar estoque</button>
         <button class="btn btn-ghost" onclick="setInventoryMovement('entry')">+ Entrada</button>
         <button class="btn btn-ghost" onclick="setInventoryMovement('sale')">- Saída</button>
         <button class="btn btn-ghost" onclick="setInventoryMovement('adjustment')">Ajustar</button>
         <button class="btn btn-danger" onclick="clearInventoryForm()">Limpar</button>
       </div>
-      <p style="color:var(--text3);font-size:12px;margin-top:10px">A reserva ajuda a separar pedidos e a disponibilidade mostra o que ainda pode ser vendido como pronta entrega.</p>
+      <p class="section-copy compact mt-10">A reserva ajuda a separar pedidos e a disponibilidade mostra o que ainda pode ser vendido como pronta entrega.</p>
     </div>
 
     <div class="toolbar">
       <div class="input-wrap"><input id="stock_search" type="search" placeholder="Buscar no estoque..." oninput="renderInventory()" style="padding-right:12px"></div>
       <div class="actions">
-        <div class="input-wrap" style="min-width:220px">
+        <div class="input-wrap min-w-220">
           <select id="stock_filter" onchange="renderInventory()">
             <option value="all">Todos os produtos</option>
             <option value="ready">Pronta entrega</option>
@@ -1662,14 +1563,14 @@ if (!window.CALC3D_CORE) {
   console.warn('calc-core.js não foi carregado; usando fallback interno.');
 }
 // ── Banco local e estado ─────────────────────────────────────────────────────
-const { DB_NAME, DB_VERSION, printerFields, printerProfileFields, printerProfileDefaults, productFields, productDefaults, autoProfileStorageKey, compactStorageKey, authApiBaseUrl, authLoginPath } = window.CALC3D_APP;
+const { DB_NAME, DB_VERSION, printerFields, printerProfileFields, printerProfileDefaults, productFields, productDefaults, autoProfileStorageKey, compactStorageKey } = window.CALC3D_APP;
 let db;
 let activePrinterId = null;
 let editingProductId = null;
 let editingInventoryProductId = null;
 let autoProfileEnabled = localStorage.getItem(autoProfileStorageKey) !== '0';
 let compactProjectMode = localStorage.getItem(compactStorageKey) !== '0';
-let advancedUnlocked = false;
+let advancedUnlocked = true;
 const dbAll = store => window.dbAll(db, store);
 const dbGet = (store, id) => window.dbGet(db, store, id);
 const dbPut = (store, value) => window.dbPut(db, store, value);
@@ -1697,57 +1598,7 @@ function platformConfigFromUI() {
   };
 }
 
-function authUrl(path) {
-  if(!authApiBaseUrl) return '';
-  return new URL(path, authApiBaseUrl).toString();
-}
-
-function setAuthStatus(message) {
-  const top = document.getElementById('profile-status');
-  const side = document.getElementById('auth-status');
-  if(top) top.textContent = message;
-  if(side) side.textContent = message;
-}
-
-function toggleProfilePanel(force) {
-  const panel = document.getElementById('profile-panel');
-  if(!panel) return;
-  const shouldOpen = typeof force === 'boolean' ? force : !panel.classList.contains('open');
-  panel.classList.toggle('open', shouldOpen);
-}
-
-function renderProfileMenu(user) {
-  const trigger = document.getElementById('profile-trigger');
-  const profileName = document.getElementById('profile-name');
-  const profileEmail = document.getElementById('profile-email');
-  const guestBlock = document.getElementById('profile-guest');
-  const sessionBlock = document.getElementById('profile-session');
-  const sessionName = document.getElementById('profile-session-name');
-  const sessionEmail = document.getElementById('profile-session-email');
-  if(trigger) trigger.textContent = 'Login';
-  if(profileName) profileName.textContent = user ? (user.name || user.id || 'Conta autorizada') : 'Convidado';
-  if(profileEmail) profileEmail.textContent = user ? (user.email || '') : 'Modo público ativo';
-  if(sessionName) sessionName.textContent = user ? (user.name || user.id || 'Conta autorizada') : '—';
-  if(sessionEmail) sessionEmail.textContent = user ? (user.email || '') : '';
-  if(guestBlock) guestBlock.classList.toggle('hidden', !!user);
-  if(sessionBlock) sessionBlock.classList.toggle('hidden', !user);
-  setAuthStatus(user
-    ? 'Sessão ativa. O modo avançado está liberado.'
-    : (authApiBaseUrl ? 'Informe usuário e senha para liberar o modo avançado.' : 'Modo avançado indisponível sem backend de autenticação.'));
-}
-
 function lockApp() {
-  advancedUnlocked = false;
-  document.body.classList.add('advanced-locked');
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    if(tab.dataset.page === 'rapido') return;
-    tab.classList.add('locked');
-    tab.disabled = true;
-  });
-  document.querySelectorAll('.requires-auth').forEach(el => el.classList.add('hidden-locked'));
-}
-
-function unlockApp() {
   advancedUnlocked = true;
   document.body.classList.remove('advanced-locked');
   document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -1757,76 +1608,14 @@ function unlockApp() {
   document.querySelectorAll('.requires-auth').forEach(el => el.classList.remove('hidden-locked'));
 }
 
-async function checkSession() {
-  if(!authApiBaseUrl) return false;
-  try {
-    const response = await fetch(authUrl('/api/session'), { credentials:'include' });
-    if(!response.ok) return false;
-    const data = await response.json();
-    return data.authenticated ? data.user || {} : null;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-async function loginWithCredentials() {
-  if(!authApiBaseUrl) return setAuthStatus('Configure o backend de autenticação antes de entrar.');
-  const username = document.getElementById('auth_username').value.trim();
-  const password = document.getElementById('auth_password').value;
-  if(!username || !password) return setAuthStatus('Informe usuário e senha.');
-  setAuthStatus('Validando acesso...');
-  try {
-    const res = await fetch(authUrl(authLoginPath), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-    if(!res.ok) throw new Error(await res.text());
-    document.getElementById('auth_password').value = '';
-    await bootstrapAuth();
-  } catch (error) {
-    console.error(error);
-    setAuthStatus('Não foi possível validar seu login.');
-  }
+function unlockApp() {
+  lockApp();
 }
 
 async function bootstrapAuth() {
-  const session = await checkSession();
-  applyAuthState(session);
+  unlockApp();
   await initApp();
 }
-
-async function logoutSession() {
-  if(!authApiBaseUrl) return;
-  try {
-    await fetch(authUrl('/api/logout'), {
-      method: 'POST',
-      credentials: 'include',
-    });
-  } catch (error) {
-    console.error(error);
-  } finally {
-    applyAuthState(null);
-    await bootstrapAuth();
-  }
-}
-
-function applyAuthState(sessionUser) {
-  if(sessionUser) {
-    unlockApp();
-    renderProfileMenu(sessionUser);
-  } else {
-    lockApp();
-    renderProfileMenu(null);
-  }
-}
-
-document.getElementById('auth-form').addEventListener('submit', event => {
-  event.preventDefault();
-  loginWithCredentials();
-});
 
 async function initApp() {
   db = await openDB();
@@ -2164,11 +1953,6 @@ function fmtPct(v) { return v.toFixed(1).replace('.',',') + '%'; }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
 function switchPage(name) {
-  const protectedPage = name !== 'rapido';
-  if(protectedPage && !advancedUnlocked) {
-    toast('Faça login para abrir o modo avançado.');
-    name = 'rapido';
-  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
